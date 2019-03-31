@@ -1,21 +1,19 @@
 package me.iit.javorek2.model;
 
-import me.iit.javorek2.model.Machine.MachineType;
-
 public class Task {
 	private String name;
-	private MachineType requiredMachineType;
+	private String requiredMachineType;
 	private Machine executor;
 	
 	public Task() {
 		//
 	}
 	
-	public Task(String name, MachineType requiredMachineType) {
+	public Task(String name, String requiredMachineType) {
 		this(name, requiredMachineType, null);
 	}
 	
-	public Task(String name, MachineType requiredMachineType, Machine executor) {
+	public Task(String name, String requiredMachineType, Machine executor) {
 		this.name = name;
 		this.requiredMachineType = requiredMachineType;
 		this.executor = executor;
@@ -25,7 +23,7 @@ public class Task {
 		return name;
 	}
 
-	public MachineType getRequiredMachineType() {
+	public String getRequiredMachineType() {
 		return requiredMachineType;
 	}
 
@@ -37,7 +35,7 @@ public class Task {
 		this.name = name;
 	}
 
-	public void setRequiredMachineType(MachineType requiredMachineType) {
+	public void setRequiredMachineType(String requiredMachineType) {
 		this.requiredMachineType = requiredMachineType;
 	}
 

@@ -8,10 +8,11 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-            <center>
-            	Operation Control
-            </center>
-            <h:link value="Machine Management" outcome="machineManagement" />
+            <h:form>
+            	<p:inputText binding="#{machineName}" value="MachineName" />
+            	<p:commandButton title="Get That Machine" action="#{machineManagementController.getMachineInfo(machineName.value)}" ajax="false" />
+            </h:form>
+            
 		</ui:define>
 	</ui:composition>
 </h:body>
