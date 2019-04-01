@@ -25,7 +25,6 @@ public class MariadbDaoImpl implements Dao {
 		Connection connection = null;
 		
 		try {
-			//Class.forName(configuration.getDriver());
 			connection = DriverManager.getConnection(configuration.getConnectionURL(), configuration.getProperties());
 		} catch (SQLException e) {
 			throw new DaoException("Cannot acquire connection to: " + configuration.getConnectionURL(), e);

@@ -1,10 +1,12 @@
 package me.iit.javorek2.service.impl;
 
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 
 import me.iit.javorek2.model.Machine;
-import me.iit.javorek2.model.exception.RepositoyException;
+import me.iit.javorek2.model.exception.RepositoryException;
 import me.iit.javorek2.model.exception.ServiceException;
 import me.iit.javorek2.repository.MachineRepository;
 import me.iit.javorek2.service.MachineManagementService;
@@ -20,10 +22,10 @@ public class MachineManagementServiceImpl implements MachineManagementService {
 	}
 
 	@Override
-	public Machine getMachineInfo(String name) throws ServiceException {
+	public List<Machine> getAllMachines() throws ServiceException {
 		try {
-			return machineRepository.getMachineByName(name);
-		} catch (RepositoyException e) {
+			return machineRepository.getMachines();
+		} catch (RepositoryException e) {
 			throw new ServiceException(e);
 		}
 	}

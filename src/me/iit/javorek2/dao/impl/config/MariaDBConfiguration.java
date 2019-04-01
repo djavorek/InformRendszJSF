@@ -6,7 +6,6 @@ import javax.faces.bean.ManagedBean;
 
 @ManagedBean(name="mariadbConfiguration")
 public class MariaDBConfiguration {
-	private static final String DATABASE_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String ADDRESS = "localhost";
 	private static final String PORT = "3306";
 	private static final String DATABASENAME = "operationcontrol";
@@ -15,10 +14,6 @@ public class MariaDBConfiguration {
 	private static final String MAX_POOL = "250";
 	
 	private Properties properties;
-	
-	public String getDriver() {
-		return DATABASE_DRIVER;
-	}
 	
 	public String getConnectionURL() {
 		return "jdbc:mariadb://" + ADDRESS + ":" + PORT + "/" + DATABASENAME;

@@ -8,11 +8,17 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-            <h:form>
-            	<p:inputText binding="#{machineName}" value="MachineName" />
-            	<p:commandButton title="Get That Machine" action="#{machineManagementController.getMachineInfo(machineName.value)}" ajax="false" />
-            </h:form>
-            
+            <p:dataTable var="Machine" value="#{machineManagementController.availableMachines}">
+				<p:column headerText="Name">
+					<h:outputText value="#{Machine.machineData.name}" />
+				</p:column>
+				<p:column headerText="Type">
+					<h:outputText value="#{Machine.machineData.type}" />
+				</p:column>
+				<p:column headerText="Currently Working">
+					<p:selectBooleanCheckbox value="#{Machine.machineData.working}" disabled="true"/>
+				</p:column>
+			</p:dataTable>
 		</ui:define>
 	</ui:composition>
 </h:body>
