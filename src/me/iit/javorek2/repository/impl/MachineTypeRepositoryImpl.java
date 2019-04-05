@@ -13,14 +13,13 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 
 import me.iit.javorek2.dao.Dao;
-import me.iit.javorek2.model.Machine;
 import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;
-import me.iit.javorek2.repository.MachineRepository;
+import me.iit.javorek2.repository.MachineTypeRepository;
 
 @ApplicationScoped
-@ManagedBean(name = "machineRepositoryImpl")
-public class MachineRepositoryImpl implements MachineRepository {
+@ManagedBean(name = "machineTypeRepositoryImpl")
+public class MachineTypeRepositoryImpl implements MachineTypeRepository {
 
 	@ManagedProperty(value = "#{mariadbDao}")
 	private Dao dao;
@@ -30,13 +29,11 @@ public class MachineRepositoryImpl implements MachineRepository {
 	}
 
 	@Override
-	public List<Machine> getMachines() throws RepositoryException {
-		List<Machine> machineList = new ArrayList<>();
-		Connection connection = null;
+	public List<String> getMachineTypes() throws RepositoryException {
+		List<String> machineTypes = new ArrayList<>();
 
-		// String sqlString;
+		Connection connection = null;
 		Statement statement;
-		// PreparedStatement preparedStatement;
 		ResultSet resultSet;
 
 		try {
@@ -47,26 +44,20 @@ public class MachineRepositoryImpl implements MachineRepository {
 
 		try {
 			statement = connection.createStatement();
-			resultSet = statement.executeQuery(
-					"SELECT machine.name, machine_type.name, machine.working FROM machine INNER JOIN machine_type ON machine.type=machine_type.id");
+			resultSet = statement.executeQuery("SELECT name FROM machine_type");
 
 			while (resultSet.next()) {
-				Machine machineToAdd = new Machine();
-				machineToAdd.setName(resultSet.getString(1));
-				machineToAdd.setType(resultSet.getString(2));
-				machineToAdd.setWorking(resultSet.getBoolean(3));
-
-				machineList.add(machineToAdd);
+				machineTypes.add(resultSet.getString(1));
 			}
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}
 
-		return machineList;
+		return machineTypes;
 	}
 
 	@Override
-	public void addMachine(Machine machine) throws RepositoryException {
+	public void addMachineType(String type) throws RepositoryException {
 		Connection connection = null;
 		PreparedStatement preparedStatement;
 
@@ -77,11 +68,8 @@ public class MachineRepositoryImpl implements MachineRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("INSERT INTO machine (name,type,working) VALUES (?,"
-					+ "(SELECT id FROM machine_type WHERE name = ?),?)");
-			preparedStatement.setString(1, machine.getName());
-			preparedStatement.setString(2, machine.getType());
-			preparedStatement.setBoolean(3, machine.isWorking());
+			preparedStatement = connection.prepareStatement("INSERT INTO machine_type (name) VALUES (?)");
+			preparedStatement.setString(1, type);
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
@@ -89,7 +77,7 @@ public class MachineRepositoryImpl implements MachineRepository {
 	}
 
 	@Override
-	public void deleteMachine(Machine machine) throws RepositoryException {
+	public void deleteMachineType(String type) throws RepositoryException {
 		Connection connection = null;
 		PreparedStatement preparedStatement;
 
@@ -100,12 +88,11 @@ public class MachineRepositoryImpl implements MachineRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("DELETE FROM machine WHERE name=?");
-			preparedStatement.setString(1, machine.getName());
+			preparedStatement = connection.prepareStatement("DELETE FROM machine_type WHERE name=?");
+			preparedStatement.setString(1, type);
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}
 	}
-
 }

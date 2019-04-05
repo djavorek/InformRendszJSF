@@ -8,5 +8,6 @@ import me.iit.javorek2.model.exception.RepositoryException;
 public interface MachineRepository {
 
 	List<Machine> getMachines() throws RepositoryException;
-
+	void addMachine(Machine machine) throws RepositoryException;
+	void deleteMachine(Machine machine) throws RepositoryException;
 }

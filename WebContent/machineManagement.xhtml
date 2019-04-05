@@ -5,20 +5,130 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui">
+	
+<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-            <p:dataTable var="Machine" value="#{machineManagementController.availableMachines}">
-				<p:column headerText="Name">
-					<h:outputText value="#{Machine.machineData.name}" />
-				</p:column>
-				<p:column headerText="Type">
-					<h:outputText value="#{Machine.machineData.type}" />
-				</p:column>
-				<p:column headerText="Currently Working">
-					<p:selectBooleanCheckbox value="#{Machine.machineData.working}" disabled="true"/>
-				</p:column>
-			</p:dataTable>
+			<h:form id="tableForm">
+	            <p:dataTable id="machineTable" 
+	            	var="Machine" 
+	            	value="#{machineManagementController.availableMachines}" 
+	            	selection="#{machineManagementController.selectedMachines}"
+	            	selectionMode="multiple"
+	            	rowKey="#{Machine.name}" 
+	            	rowSelectMode="add">
+	            	
+	            	<p:ajax event="toggleSelect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
+	            	<p:ajax event="rowUnselect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
+	            	<p:ajax event="rowSelect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
+	            	
+					<p:column headerText="Name">
+						<h:outputText value="#{Machine.name}" />
+					</p:column>
+					
+					<p:column headerText="Type">
+						<h:outputText value="#{Machine.type}" />
+					</p:column>
+					
+					<p:column headerText="Currently Working">
+						<p:selectBooleanCheckbox value="#{Machine.working}" 
+							disabled="true"/>
+					</p:column>
+					
+					<f:facet name="footer">
+						<p:commandButton id="deleteButton" 
+							value="Delete Selected" 
+							disabled="#{not machineManagementController.deleteButtonEnabled}"
+						 	icon="fa fa-fw fa-remove" 
+						 	action="#{machineManagementController.deleteSelectedMachines}" 
+						 	update="@form"/>
+						<p:commandButton id="addButton" 
+							value="Add New"
+							action="#{machineManagementController.fetchPossibleMachineTypes}"
+							onsuccess="PF('addDialog').show();" 
+							icon="fa fa-fw fa-plus"/>
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+			
+			<p:dialog id="newMachineDial"
+				header="Adding a new Machine" 
+				widgetVar="addDialog" 
+				modal="true"
+				resizable="false" 
+				draggable="false">
+					<h:form id="MachineForm">
+						<p:messages autoUpdate="true" showDetails="true" />
+						<p:inputText id="Name"
+							binding="#{machineName}"
+							placeholder="Machine name" 
+							required="true"	requiredMessage="You must provide a name!">
+						</p:inputText>
+						<br/>
+						<p:selectOneMenu id="Type" 
+							binding="#{machineType}" 
+							required="true"
+							requiredMessage="You must provide a type!"
+							dynamic="true">
+				            <f:selectItem itemLabel="Select One" itemValue="" />
+				            <f:selectItems value="#{machineManagementController.possibleMachineTypes}" />
+				        </p:selectOneMenu>
+				        <p:commandButton id="manageTypesButton" 
+							value="Manage Types"
+							immediate="true"
+							onclick="PF('typeManagementDialog').show();" 
+							icon="fa fa-fw fa-wrench"/>
+				        <br/>
+						<p:commandButton title="Add"
+							process="@form"
+							update="@form, :tableForm:machineTable"
+							action="#{machineManagementController.addMachine(machineName.value, machineType.value)}"
+							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('addDialog').hide();" />
+					</h:form>
+			</p:dialog>
+			
+			<p:dialog id="manageTypesDial"
+				header="Managing Machine Types" 
+				widgetVar="typeManagementDialog" 
+				modal="true"
+				resizable="false" 
+				draggable="false">
+					
+					<h:form id="typeAddForm">
+						<p:messages for="typeManagement" showDetails="true"/>
+
+						<p:inputText id="Name"
+							binding="#{machineTypeToAdd}"
+							placeholder="Machine name" 
+							required="true"	requiredMessage="You must provide a name!">
+						</p:inputText>
+						<p:commandButton title="Add"
+							ajax="true"
+							process="@form"
+							update="@form, MachineForm"
+							actionListener="#{machineManagementController.addMachineType(machineTypeToAdd.value)}"/>
+					</h:form>
+						<br/>
+					<h:form id="typeDeleteForm">
+						<p:selectOneMenu id="Type" 
+							binding="#{machineTypeToDelete}" 
+							required="true"
+							requiredMessage="You must provide a type!"
+							dynamic="true">
+				            <f:selectItem itemLabel="Select One" itemValue="" />
+				            <f:selectItems value="#{machineManagementController.possibleMachineTypes}" />
+				        </p:selectOneMenu>
+						<p:commandButton title="Remove"
+							ajax="true"
+							process="@form"
+							update="@form, MachineForm, :typeAddForm"
+							actionListener="#{machineManagementController.deleteMachineType(machineTypeToDelete.value)}"/>
+				        <br/>
+						<p:commandButton title="Close"
+							onclick="PF('typeManagementDialog').hide();" />
+					</h:form>
+			</p:dialog>
 		</ui:define>
 	</ui:composition>
 </h:body>

@@ -9,8 +9,20 @@
 			<p:outputLabel></p:outputLabel>
 			<p:toolbar>
 				<f:facet name="left">
-					<h:outputLabel value="" styleClass="fa fa-fw fa-lg fa-stack-overflow" />
-					<h:outputText value="Operation Control" style="font-size:1.3em" />
+					<p:tabMenu activeIndex="#{param.active}">
+					    <p:menuitem value="Overview" outcome="index.xhtml">
+					    	<f:param name="active" value="0"/>
+					    </p:menuitem>
+						<p:menuitem value="Machines" outcome="machineManagement.xhtml">
+							<f:param name="active" value="1"/>
+						</p:menuitem>
+						<p:menuitem value="Jobs" outcome="index.xhtml">
+							<f:param name="active" value="2"/>
+						</p:menuitem>
+						<p:menuitem value="Workers" outcome="index.xhtml">
+							<f:param name="active" value="3"/>
+						</p:menuitem>
+					</p:tabMenu>
 				</f:facet>
 
 				<f:facet name="right">

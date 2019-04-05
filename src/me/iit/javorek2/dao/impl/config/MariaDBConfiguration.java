@@ -2,8 +2,10 @@ package me.iit.javorek2.dao.impl.config;
 
 import java.util.Properties;
 
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 
+@ApplicationScoped
 @ManagedBean(name="mariadbConfiguration")
 public class MariaDBConfiguration {
 	private static final String ADDRESS = "localhost";

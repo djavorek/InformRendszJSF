@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 
@@ -11,6 +12,7 @@ import me.iit.javorek2.dao.Dao;
 import me.iit.javorek2.dao.impl.config.MariaDBConfiguration;
 import me.iit.javorek2.model.exception.DaoException;
 
+@ApplicationScoped
 @ManagedBean(name="mariadbDao")
 public class MariadbDaoImpl implements Dao {
 	
