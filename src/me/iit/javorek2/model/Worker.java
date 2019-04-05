@@ -2,17 +2,18 @@ package me.iit.javorek2.model;
 
 public class Worker {
 	private String name;
+	private int hourlyWage;
 	private Job currentJob;
 	
 	public Worker() {
 		//
 	}
 	
-	public Worker(String name) {
-		this(name, null);
+	public Worker(String name, int hourlyWage) {
+		this(name, hourlyWage, null);
 	}
 	
-	public Worker(String name, Job currentJob) {
+	public Worker(String name, int hourlyWage, Job currentJob) {
 		this.name = name;
 		this.currentJob = currentJob;
 	}
@@ -31,5 +32,13 @@ public class Worker {
 	
 	public void setCurrentJob(Job currentJob) {
 		this.currentJob = currentJob;
+	}
+
+	public int getHourlyWage() {
+		return hourlyWage;
+	}
+
+	public void setHourlyWage(int hourlyWage) {
+		this.hourlyWage = hourlyWage;
 	}
 }

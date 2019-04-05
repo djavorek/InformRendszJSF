@@ -10,4 +10,5 @@ public interface MachineRepository {
 	List<Machine> getMachines() throws RepositoryException;
 	void addMachine(Machine machine) throws RepositoryException;
 	void deleteMachine(Machine machine) throws RepositoryException;
+	void updateMachineStatus(Machine machine) throws RepositoryException;
 }

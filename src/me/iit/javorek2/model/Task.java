@@ -3,20 +3,16 @@ package me.iit.javorek2.model;
 public class Task {
 	private String name;
 	private String requiredMachineType;
-	private Machine executor;
+	private int duration;
 	
 	public Task() {
 		//
 	}
 	
-	public Task(String name, String requiredMachineType) {
-		this(name, requiredMachineType, null);
-	}
-	
-	public Task(String name, String requiredMachineType, Machine executor) {
+	public Task(String name, String requiredMachineType, int duration) {
 		this.name = name;
 		this.requiredMachineType = requiredMachineType;
-		this.executor = executor;
+		this.duration = duration;
 	}
 
 	public String getName() {
@@ -27,10 +23,6 @@ public class Task {
 		return requiredMachineType;
 	}
 
-	public Machine getExecutor() {
-		return executor;
-	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -39,7 +31,13 @@ public class Task {
 		this.requiredMachineType = requiredMachineType;
 	}
 
-	public void setExecutor(Machine executor) {
-		this.executor = executor;
+	public int getDuration() {
+		return duration;
 	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
+	
 }

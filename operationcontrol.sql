@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `machine` (
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_TYPE` (`TYPE`),
   CONSTRAINT `FK_TYPE` FOREIGN KEY (`TYPE`) REFERENCES `machine_type` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about the machines.';
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about the machines.';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.machine_type
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `machine_type` (
   `NAME` varchar(30) COLLATE utf8_hungarian_ci NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains all available types for Machines';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains all available types for Machines';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.task
@@ -65,12 +65,10 @@ CREATE TABLE IF NOT EXISTS `task` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(30) COLLATE utf8_hungarian_ci NOT NULL,
   `REQ_MACH_TYPE` int(11) NOT NULL,
-  `EXECUTOR` int(11) DEFAULT NULL,
+  `DURATION` int(6) NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_REQUIRED_TYPE` (`REQ_MACH_TYPE`),
-  KEY `FK_EXECUTOR` (`EXECUTOR`),
-  CONSTRAINT `FK_EXECUTOR` FOREIGN KEY (`EXECUTOR`) REFERENCES `machine` (`ID`),
   CONSTRAINT `FK_REQUIRED_TYPE` FOREIGN KEY (`REQ_MACH_TYPE`) REFERENCES `machine_types` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about tasks, that can be executed by machines.';
 
@@ -80,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `worker` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(50) COLLATE utf8_hungarian_ci NOT NULL,
   `CURRENT_JOB` int(11) NOT NULL,
+  `HOURLYWAGE` int(6) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_CURRENT_JOB` (`CURRENT_JOB`),

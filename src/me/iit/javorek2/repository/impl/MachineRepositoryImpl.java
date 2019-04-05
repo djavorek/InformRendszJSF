@@ -34,9 +34,7 @@ public class MachineRepositoryImpl implements MachineRepository {
 		List<Machine> machineList = new ArrayList<>();
 		Connection connection = null;
 
-		// String sqlString;
 		Statement statement;
-		// PreparedStatement preparedStatement;
 		ResultSet resultSet;
 
 		try {
@@ -102,6 +100,33 @@ public class MachineRepositoryImpl implements MachineRepository {
 		try {
 			preparedStatement = connection.prepareStatement("DELETE FROM machine WHERE name=?");
 			preparedStatement.setString(1, machine.getName());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
+	}
+	
+	/**
+	 * Updates a machine 'WORKING' column with simply the new domain object
+	 * @param machine	New domain object, its name used to find the object waiting for update,
+	 * 					working parameter will be updated into the database.
+	 * @throws RepositoryException
+	 */
+	@Override
+	public void updateMachineStatus(Machine machine) throws RepositoryException {
+		Connection connection = null;
+		PreparedStatement preparedStatement;
+
+		try {
+			connection = dao.getConnection();
+		} catch (DaoException e) {
+			throw new RepositoryException("Error in underlying layer, database is not ready.", e);
+		}
+
+		try {
+			preparedStatement = connection.prepareStatement("UPDATE machine SET working=? WHERE name=?");
+			preparedStatement.setString(1, machine.getName());
+			preparedStatement.setBoolean(2, machine.isWorking());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
