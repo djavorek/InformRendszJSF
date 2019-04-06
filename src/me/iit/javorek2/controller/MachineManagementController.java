@@ -9,8 +9,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
-import com.sun.xml.internal.ws.client.RequestContext;
-
 import me.iit.javorek2.model.Machine;
 import me.iit.javorek2.model.exception.ServiceException;
 import me.iit.javorek2.service.MachineManagementService;
