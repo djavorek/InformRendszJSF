@@ -17,17 +17,30 @@ import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;
 import me.iit.javorek2.repository.MachineTypeRepository;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MachineTypeRepositoryImpl.
+ */
 @ApplicationScoped
 @ManagedBean(name = "machineTypeRepositoryImpl")
 public class MachineTypeRepositoryImpl implements MachineTypeRepository {
 
+	/** The dao. */
 	@ManagedProperty(value = "#{mariadbDao}")
 	private Dao dao;
 
+	/**
+	 * Sets the dao.
+	 *
+	 * @param dao the new dao
+	 */
 	public void setDao(Dao dao) {
 		this.dao = dao;
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineTypeRepository#getMachineTypes()
+	 */
 	@Override
 	public List<String> getMachineTypes() throws RepositoryException {
 		List<String> machineTypes = new ArrayList<>();
@@ -56,6 +69,9 @@ public class MachineTypeRepositoryImpl implements MachineTypeRepository {
 		return machineTypes;
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineTypeRepository#addMachineType(java.lang.String)
+	 */
 	@Override
 	public void addMachineType(String type) throws RepositoryException {
 		Connection connection = null;
@@ -76,6 +92,9 @@ public class MachineTypeRepositoryImpl implements MachineTypeRepository {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineTypeRepository#deleteMachineType(java.lang.String)
+	 */
 	@Override
 	public void deleteMachineType(String type) throws RepositoryException {
 		Connection connection = null;

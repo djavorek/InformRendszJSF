@@ -18,17 +18,30 @@ import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;
 import me.iit.javorek2.repository.MachineRepository;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class MachineRepositoryImpl.
+ */
 @ApplicationScoped
 @ManagedBean(name = "machineRepositoryImpl")
 public class MachineRepositoryImpl implements MachineRepository {
 
+	/** The dao. */
 	@ManagedProperty(value = "#{mariadbDao}")
 	private Dao dao;
 
+	/**
+	 * Sets the dao.
+	 *
+	 * @param dao the new dao
+	 */
 	public void setDao(Dao dao) {
 		this.dao = dao;
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineRepository#getMachines()
+	 */
 	@Override
 	public List<Machine> getMachines() throws RepositoryException {
 		List<Machine> machineList = new ArrayList<>();
@@ -63,6 +76,9 @@ public class MachineRepositoryImpl implements MachineRepository {
 		return machineList;
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineRepository#addMachine(me.iit.javorek2.model.Machine)
+	 */
 	@Override
 	public void addMachine(Machine machine) throws RepositoryException {
 		Connection connection = null;
@@ -86,6 +102,9 @@ public class MachineRepositoryImpl implements MachineRepository {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineRepository#deleteMachine(me.iit.javorek2.model.Machine)
+	 */
 	@Override
 	public void deleteMachine(Machine machine) throws RepositoryException {
 		Connection connection = null;
@@ -106,11 +125,8 @@ public class MachineRepositoryImpl implements MachineRepository {
 		}
 	}
 	
-	/**
-	 * Updates a machine 'WORKING' column with simply the new domain object
-	 * @param machine	New domain object, its name used to find the object waiting for update,
-	 * 					working parameter will be updated into the database.
-	 * @throws RepositoryException
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineRepository#updateMachineStatus(me.iit.javorek2.model.Machine)
 	 */
 	@Override
 	public void updateMachineStatus(Machine machine) throws RepositoryException {
@@ -125,12 +141,11 @@ public class MachineRepositoryImpl implements MachineRepository {
 
 		try {
 			preparedStatement = connection.prepareStatement("UPDATE machine SET working=? WHERE name=?");
-			preparedStatement.setString(1, machine.getName());
-			preparedStatement.setBoolean(2, machine.isWorking());
+			preparedStatement.setBoolean(1, machine.isWorking());
+			preparedStatement.setString(2, machine.getName());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}
 	}
-
 }
