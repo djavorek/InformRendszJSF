@@ -8,7 +8,7 @@ import me.iit.javorek2.service.WorkerManagementService;
 
 @ViewScoped
 @ManagedBean
-public class workerManagementController {
+public class WorkerManagementController {
 
 	@ManagedProperty(value = "#{workerManagementServiceImpl}")
 	private WorkerManagementService service;

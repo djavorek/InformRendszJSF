@@ -59,7 +59,7 @@ public class JobRepositoryImpl implements JobRepository {
 
 		try {
 			statement = connection.createStatement();
-			resultSet = statement.executeQuery("SELECT name FROM jobs");
+			resultSet = statement.executeQuery("SELECT name FROM job");
 
 			while (resultSet.next()) {
 				Job jobToAdd = new Job();
