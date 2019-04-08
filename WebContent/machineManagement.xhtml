@@ -18,7 +18,6 @@
 	            	rowKey="#{Machine.name}" 
 	            	rowSelectMode="add">
 	            	
-	            	<p:ajax event="toggleSelect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
 	            	<p:ajax event="rowUnselect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
 	            	<p:ajax event="rowSelect" listener="#{machineManagementController.machineSelectionListener}" update="@form" />
 	            	

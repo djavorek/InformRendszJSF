@@ -6,25 +6,14 @@
 	<ui:composition>
 		<h:form>
 			<p:growl id="messages" showDetail="true" />
-			<p:outputLabel></p:outputLabel>
-			<p:toolbar>
-				<f:facet name="left">
-					<p:tabMenu activeIndex="#{param.active}">
-					    <p:menuitem value="Home" outcome="index.xhtml" icon="fa fa-fw fa-home">
-					    	<f:param name="active" value="0"/>
-					    </p:menuitem>
-						<p:menuitem value="Machines" outcome="machineManagement.xhtml" icon="fa fa-fw fa-gear">
-							<f:param name="active" value="1"/>
-						</p:menuitem>
-						<p:menuitem value="Jobs" outcome="jobManagement.xhtml" icon="fa fa-fw fa-tasks">
-							<f:param name="active" value="2"/>
-						</p:menuitem>
-						<p:menuitem value="Workers" outcome="workerManagement.xhtml" icon="fa fa-fw fa-smile-o">
-							<f:param name="active" value="3"/>
-						</p:menuitem>
-					</p:tabMenu>
-				</f:facet>
-			</p:toolbar>
+			<div class="ui-g ui-fluid">
+				<p:menubar>
+				    <p:menuitem value="Home" outcome="index.xhtml" icon="fa fa-fw fa-home"/>
+					<p:menuitem value="Machines" outcome="machineManagement.xhtml" icon="fa fa-fw fa-gear"/>
+					<p:menuitem value="Jobs" outcome="jobManagement.xhtml" icon="fa fa-fw fa-tasks"/>
+					<p:menuitem value="Workers" outcome="workerManagement.xhtml" icon="fa fa-fw fa-smile-o"/>
+				</p:menubar>
+			</div>
 		</h:form>
 	</ui:composition>
 </body>

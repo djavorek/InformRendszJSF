@@ -46,7 +46,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 	public Worker getWorker(Worker worker) throws RepositoryException {
 		Connection connection = null;
 
-		Statement statement;
+		PreparedStatement preparedStatement;
 		ResultSet resultSet;
 
 		try {
@@ -56,13 +56,15 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		}
 
 		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(
-					"SELECT worker.name, worker.hourlywage, job.name FROM worker INNER JOIN job "
-					+ "ON worker.current_job=job.id WHERE worker.name=?");
+			preparedStatement = connection.prepareStatement("SELECT worker.name, worker.qualification, worker.hourlywage, job.name, worker.status "
+					+ "FROM worker INNER JOIN job ON worker.current_job=job.id WHERE worker.name=?");
+			preparedStatement.setString(1, worker.getName());
+			resultSet = preparedStatement.executeQuery();
+					
 
 			if (resultSet.next()) {
-				return new Worker(resultSet.getString(1), resultSet.getInt(2), new Job(resultSet.getString(3)));
+				return new Worker(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3), 
+						new Job(resultSet.getString(4)), Worker.WorkerStatus.valueOf(resultSet.getString(5)));
 			}
 			else {
 				throw new RepositoryException("There is no worker with this name!");
@@ -80,7 +82,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		List<Worker> workerList = new ArrayList<>();
 		Connection connection = null;
 
-		Statement statement;
+		PreparedStatement preparedStatement;
 		ResultSet resultSet;
 
 		try {
@@ -90,13 +92,14 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		}
 
 		try {
-			statement = connection.createStatement();
-			resultSet = statement.executeQuery(
-					"SELECT machine.name, machine_type.name, machine.working FROM machine INNER JOIN machine_type "
-					+ "ON machine.type=machine_type.id WHERE worker.name LIKE '%?%'");
+			preparedStatement = connection.prepareStatement(" worker.name, worker.qualification, worker.hourlywage, job.name, worker.status FROM "
+					+ "worker INNER JOIN job ON worker.current_job=job.id WHERE worker.name LIKE '%?%'");
+			resultSet = preparedStatement.executeQuery();
+					
 
 			while (resultSet.next()) {
-				Worker workerToAdd = new Worker(resultSet.getString(1), resultSet.getInt(2), new Job(resultSet.getString(3)));
+				Worker workerToAdd = new Worker(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3), 
+						new Job(resultSet.getString(4)), Worker.WorkerStatus.valueOf(resultSet.getString(5)));
 				workerList.add(workerToAdd);
 			}
 		} catch (SQLException e) {
@@ -120,9 +123,13 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("INSERT INTO worker (name,hourlywage) VALUES (?,?)");
+			preparedStatement = connection.prepareStatement("INSERT INTO worker (name, qualification, hourlywage, current_job, status) "
+					+ "VALUES (?, ?, ?, (SELECT id FROM job WHERE name = ?), ?)");
 			preparedStatement.setString(1, worker.getName());
-			preparedStatement.setInt(2, worker.getHourlyWage());
+			preparedStatement.setString(2, worker.getQualification());
+			preparedStatement.setInt(3, worker.getHourlyWage());
+			preparedStatement.setString(4, worker.getCurrentJob().getName());
+			preparedStatement.setString(5, worker.getStatus().getCode());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);

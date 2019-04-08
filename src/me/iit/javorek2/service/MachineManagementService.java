@@ -8,9 +8,11 @@ import me.iit.javorek2.model.exception.ServiceException;
 public interface MachineManagementService {
 	
 	List<Machine> getAllMachines() throws ServiceException;
+	List<Machine> getFreeMachines() throws ServiceException;
 	List<String> getPossibleMachineTypes() throws ServiceException;
 	void addMachine(Machine machineToAdd) throws ServiceException;
 	void addMachineType(String typeToAdd) throws ServiceException;
 	void deleteMachines(List<Machine> machinesToDelete) throws ServiceException;
 	void deleteMachineType(String typeToDelete) throws ServiceException;
+	void updateMachineStatus(Machine machine) throws ServiceException;
 }

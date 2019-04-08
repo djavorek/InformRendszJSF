@@ -1,6 +1,7 @@
 package me.iit.javorek2.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -38,6 +39,14 @@ public class MachineManagementServiceImpl implements MachineManagementService {
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
 		}
+	}
+	
+	@Override
+	public List<Machine> getFreeMachines() throws ServiceException {
+		return getAllMachines()
+			.stream()
+			.filter(machine -> machine.isWorking())
+			.collect(Collectors.toList());
 	}
 	
 	@Override
@@ -81,7 +90,16 @@ public class MachineManagementServiceImpl implements MachineManagementService {
 	@Override
 	public void deleteMachineType(String typeToDelete) throws ServiceException {
 		try {
-			machineTypeRepository.deleteMachineType(typeToDelete);;
+			machineTypeRepository.deleteMachineType(typeToDelete);
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	@Override
+	public void updateMachineStatus(Machine machine) throws ServiceException {
+		try {
+			machineRepository.updateMachineStatus(machine);;
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
 		}

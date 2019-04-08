@@ -44,7 +44,7 @@ public interface JobRepository {
 	 * @param job the job
 	 * @throws RepositoryException the repository exception
 	 */
-	void removeTaskUnderJob(Task task, Job job) throws RepositoryException;
+	void deleteTaskUnderJob(Task task, Job job) throws RepositoryException;
 	
 	/**
 	 * Delete job.

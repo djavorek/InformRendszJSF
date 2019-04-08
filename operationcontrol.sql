@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `job` (
   `NAME` varchar(30) COLLATE utf8_hungarian_ci NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about jobs.';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about jobs.';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.job_task
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `job_task` (
   KEY `FK_TASK` (`TASK`),
   CONSTRAINT `FK_JOB` FOREIGN KEY (`JOB`) REFERENCES `job` (`ID`),
   CONSTRAINT `FK_TASK` FOREIGN KEY (`TASK`) REFERENCES `task` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Maps the One To Many relationship between a job and its tasks.';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Maps the One To Many relationship between a job and its tasks.';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.machine
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `machine` (
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_TYPE` (`TYPE`),
   CONSTRAINT `FK_TYPE` FOREIGN KEY (`TYPE`) REFERENCES `machine_type` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about the machines.';
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about the machines.';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.machine_type
@@ -66,19 +66,24 @@ CREATE TABLE IF NOT EXISTS `task` (
   `NAME` varchar(30) COLLATE utf8_hungarian_ci NOT NULL,
   `REQ_MACH_TYPE` int(11) NOT NULL,
   `DURATION` int(6) NOT NULL,
+  `EXECUTOR` int(11) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_REQUIRED_TYPE` (`REQ_MACH_TYPE`),
-  CONSTRAINT `FK_REQUIRED_TYPE` FOREIGN KEY (`REQ_MACH_TYPE`) REFERENCES `machine_types` (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about tasks, that can be executed by machines.';
+  KEY `FK_EXECUTOR` (`EXECUTOR`),
+  CONSTRAINT `FK_EXECUTOR` FOREIGN KEY (`EXECUTOR`) REFERENCES `machine` (`ID`),
+  CONSTRAINT `FK_REQUIRED_TYPE` FOREIGN KEY (`REQ_MACH_TYPE`) REFERENCES `machine_type` (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_hungarian_ci COMMENT='Contains information about tasks, that can be executed by machines.';
 
 -- Data exporting was unselected.
 -- Dumping structure for tábla operationcontrol.worker
 CREATE TABLE IF NOT EXISTS `worker` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `NAME` varchar(50) COLLATE utf8_hungarian_ci NOT NULL,
-  `CURRENT_JOB` int(11) DEFAULT NULL,
+  `QUALIFICATION` varchar(50) COLLATE utf8_hungarian_ci NOT NULL DEFAULT '',
   `HOURLYWAGE` int(6) NOT NULL DEFAULT 0,
+  `CURRENT_JOB` int(11) DEFAULT NULL,
+  `STATUS` varchar(50) COLLATE utf8_hungarian_ci NOT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `NAME` (`NAME`),
   KEY `FK_CURRENT_JOB` (`CURRENT_JOB`),

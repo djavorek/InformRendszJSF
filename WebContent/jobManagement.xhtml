@@ -9,38 +9,84 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
+			<p:messages for="general" autoUpdate="true" showDetails="true" />
 			<h:form id="jobTreeForm">
-				<p:tree id="jobTaskTree" value="#{jobManagementController.jobTreeRoot}" 
-					var="node" 
-					animate="true"
-					dynamic="true">
-			        <p:treeNode>
-			            <h:outputText value="#{node.name}" />
-			        </p:treeNode>
-			    </p:tree>
+				<div class="ui-material ui-g-3 ui-sm-12">
+					<h4>Jobs and Tasks</h4>
+					<p:tree id="jobTaskTree" value="#{jobManagementController.jobTreeRoot}" 
+						var="node" 
+						selectionMode="single"
+						selection="#{jobManagementController.selectedJobTaskNode}"
+						animate="true"
+						dynamic="true">
+				        <p:treeNode>
+				            <h:outputText value="#{node.name}" />
+				        </p:treeNode>
+				    </p:tree>
+				    
+				    <p:contextMenu for="jobTaskTree">
+				        <p:menuitem value="View" update="jobTaskTree" action="#{jobManagementController.deleteSelectedNode()}" icon="fa fa-fw fa-search" />
+				        <p:menuitem value="Delete" update="jobTaskTree" action="#{jobManagementController.deleteSelectedNode()}" icon="fa fa-fw fa-times"/>
+				    </p:contextMenu>
+				</div>
 			</h:form>
 			
 			<h:form id="addTaskForm">
-				<p:messages autoUpdate="true" showDetails="true" />
-				<p:inputText id="Name"
-					binding="#{taskName}"
-					placeholder="Task name" 
-					required="true"	requiredMessage="You must provide a name!">
-				</p:inputText>
-				<br/>
-				<p:selectOneMenu id="Job" 
-					binding="#{jobName}" 
-					required="true"
-					requiredMessage="You must provide a type!"
-					dynamic="true">
-		            <f:selectItem itemLabel="Select One" itemValue="" />
-		            <f:selectItems value="#{jobManagementController.availableJobs}" var="job" itemLabel="#{job.name}" itemValue="#{job.name}" />
-		        </p:selectOneMenu>
-		        <br/>
-				<p:commandButton title="Add"
-					process="@form"
-					update="@form, :jobTreeForm:jobTaskTree"
-					action="#{jobManagementController.addTaskUnderJob(taskName,jobName)}"/>
+				<div class="ui-material ui-g-4 ui-sm-12">
+					<h4>Add New Task</h4>
+					<p:messages autoUpdate="true" showDetails="true" />
+					<span>Task Name</span>
+					<p:inputText id="Name"
+						binding="#{taskName}"
+						placeholder="Task name" 
+						required="true"	requiredMessage="You must provide a name!">
+					</p:inputText>
+					<br/>
+					<span>Parent Job Name</span>
+					<p:selectOneMenu id="job" 
+						binding="#{jobName}" 
+						required="true"
+						requiredMessage="You must provide a parent job!"
+						dynamic="true"
+						style="width:300px">
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{jobManagementController.jobNames}"/>
+			        </p:selectOneMenu>
+			        <br/>
+			        <span>Required Machine Type</span>
+			        <p:selectOneMenu id="machineType" 
+						binding="#{machineType}" 
+						required="true"
+						requiredMessage="You must provide a type!"
+						dynamic="true"
+						style="width:300px">
+			            <f:selectItem itemLabel="Select One" itemValue="" />
+			            <f:selectItems value="#{jobManagementController.machineTypes}"/>
+			        </p:selectOneMenu>
+			      	<br/>
+			        <span>Executor</span>
+			        <p:selectOneMenu id="executor" 
+						binding="#{executor}" 
+						dynamic="true"
+						style="width:300px">
+			            <f:selectItem itemLabel="Choose Or Leave" itemValue="" />
+			            <f:selectItems value="#{jobManagementController.freeMachineNames}"/>
+			        </p:selectOneMenu>
+			        <br/>
+			        <span>Task Duration</span>
+			        <p:inputNumber id="duration"
+			        	binding="#{taskDuration}"
+			        	required="true"
+						requiredMessage="You must provide the duration!"
+						minValue="0"
+						maxValue="10000">
+			        </p:inputNumber>
+			        <br/>
+					<p:commandButton title="Add"
+						process="@form"
+						update="@form, :jobTreeForm:jobTaskTree"
+						action="#{jobManagementController.addTaskUnderJob(taskName.value, taskDuration.value, machineType.value, executor.value, jobName.value)}"/>
+				</div>
 			</h:form>
 		</ui:define>
 	</ui:composition>

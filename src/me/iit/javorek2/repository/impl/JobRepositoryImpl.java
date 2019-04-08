@@ -102,6 +102,7 @@ public class JobRepositoryImpl implements JobRepository {
 	@Override
 	public void addTaskUnderJob(Task task, Job job) throws RepositoryException {
 		Connection connection = null;
+		ResultSet resultSet;
 		PreparedStatement preparedStatement;
 
 		try {
@@ -111,8 +112,23 @@ public class JobRepositoryImpl implements JobRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("INSERT INTO job_task (job, task) VALUES (SELECT id FROM job WHERE name=?, "
-														+ "SELECT id FROM task WHERE name=?)");
+			preparedStatement = connection.prepareStatement("SELECT name FROM task WHERE name=?");
+			preparedStatement.setString(1, task.getName());
+			resultSet = preparedStatement.executeQuery();
+
+			if (!resultSet.next()) {
+				preparedStatement = connection.prepareStatement("INSERT INTO task (name, req_mach_type, duration) VALUES "
+						+ "(?, (SELECT id FROM machine_type WHERE name = ?), ?)");
+				preparedStatement.setString(1, task.getName());
+				preparedStatement.setString(2, task.getRequiredMachineType());
+				preparedStatement.setInt(3, task.getDuration());
+				preparedStatement.executeUpdate();
+			} else {
+				throw new RepositoryException("Task with same name already exists.");
+			}
+			
+			preparedStatement = connection.prepareStatement("INSERT INTO job_task (job, task) VALUES ((SELECT id FROM job WHERE name=?), "
+														+ "(SELECT id FROM task WHERE name=?))");
 			preparedStatement.setString(1, job.getName());
 			preparedStatement.setString(2, task.getName());
 			preparedStatement.executeUpdate();
@@ -125,9 +141,10 @@ public class JobRepositoryImpl implements JobRepository {
 	 * @see me.iit.javorek2.repository.JobRepository#removeTaskUnderJob(me.iit.javorek2.model.Task, me.iit.javorek2.model.Job)
 	 */
 	@Override
-	public void removeTaskUnderJob(Task task, Job job) throws RepositoryException {
+	public void deleteTaskUnderJob(Task task, Job job) throws RepositoryException {
 		Connection connection = null;
 		PreparedStatement preparedStatement;
+		ResultSet resultSet;
 
 		try {
 			connection = dao.getConnection();
@@ -140,6 +157,17 @@ public class JobRepositoryImpl implements JobRepository {
 			preparedStatement.setString(1, job.getName());
 			preparedStatement.setString(2, task.getName());
 			preparedStatement.executeUpdate();
+			
+			preparedStatement = connection.prepareStatement("SELECT id FROM job_task WHERE task=(SELECT id FROM task WHERE name=?)");
+			preparedStatement.setString(1, task.getName());
+			resultSet = preparedStatement.executeQuery();
+			
+			if(!resultSet.next()) {
+				preparedStatement = connection.prepareStatement("DELETE FROM task WHERE name=?");
+				preparedStatement.setString(1, task.getName());
+				preparedStatement.executeUpdate();
+			}
+			
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}

@@ -10,5 +10,7 @@ public interface JobManagementService {
 	
 	List<Job> getAllJobs() throws ServiceException;
 	void addTaskUnderJob(Task task, Job job) throws ServiceException;
+	void deleteTaskUnderJob(Task task, Job job) throws ServiceException;
+	void deleteJob(Job job) throws ServiceException;
 	
 }

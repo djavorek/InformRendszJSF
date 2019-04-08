@@ -12,6 +12,9 @@ public class Task {
 	/** The required machine type. */
 	private String requiredMachineType;
 	
+	/** The executor. */
+	private Machine executor;
+	
 	/** The duration. */
 	private int duration;
 	
@@ -28,11 +31,13 @@ public class Task {
 	 * @param name the name
 	 * @param requiredMachineType the required machine type
 	 * @param duration the duration
+	 * @param executor the executor
 	 */
-	public Task(String name, String requiredMachineType, int duration) {
+	public Task(String name, String requiredMachineType, int duration, Machine executor) {
 		this.name = name;
 		this.requiredMachineType = requiredMachineType;
 		this.duration = duration;
+		this.executor = executor;
 	}
 
 	/**
@@ -87,6 +92,24 @@ public class Task {
 	 */
 	public void setDuration(int duration) {
 		this.duration = duration;
+	}
+
+	/**
+	 * Gets the executor.
+	 *
+	 * @return the executor
+	 */
+	public Machine getExecutor() {
+		return executor;
+	}
+
+	/**
+	 * Sets the executor.
+	 *
+	 * @param executor the new executor
+	 */
+	public void setExecutor(Machine executor) {
+		this.executor = executor;
 	}
 
 	
