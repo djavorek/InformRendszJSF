@@ -45,7 +45,7 @@ public class MachineManagementServiceImpl implements MachineManagementService {
 	public List<Machine> getFreeMachines() throws ServiceException {
 		return getAllMachines()
 			.stream()
-			.filter(machine -> machine.isWorking())
+			.filter(machine -> !machine.isWorking())
 			.collect(Collectors.toList());
 	}
 	

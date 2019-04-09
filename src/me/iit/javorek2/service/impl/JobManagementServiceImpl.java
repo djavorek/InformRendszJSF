@@ -84,7 +84,7 @@ public class JobManagementServiceImpl implements JobManagementService {
 		try {
 			jobRepository.deleteTaskUnderJob(task, job);
 			
-			if(task.getExecutor() != null && !task.getExecutor().getName().equals("")) {
+			if(task.getExecutor() != null && task.getExecutor().getName() != null) {
 				Machine machineToUpdate = new Machine();
 				machineToUpdate.setName(task.getExecutor().getName());
 				machineToUpdate.setWorking(false);
@@ -99,6 +99,15 @@ public class JobManagementServiceImpl implements JobManagementService {
 	public void deleteJob(Job job) throws ServiceException {
 		try {
 			jobRepository.deleteJob(job);
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	@Override
+	public void addJob(Job job) throws ServiceException {
+		try {
+			jobRepository.addJob(job);
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
 		}

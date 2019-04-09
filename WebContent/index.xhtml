@@ -8,9 +8,47 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-            <center>
-            	<h:link value="Machine Management" outcome="machineManagement" />
-            </center>
+			<p:panel id="main" header="Üzemirányító rendszer"
+				styleClass="box-solid box-info">
+				<h:outputText
+					value="
+           			A kifejlesztendő alkalmazás alkalmas egy képzeletbeli üzem erőforrásainak menedzselésére. 
+           			A rendszer alapvető objektumai: munkások, gépek, munkák, feladatok. 
+           			Egy munka több feladatból áll (legalább 1). Egy feladatot csak 1 gépen lehet elvégezni. 
+           			A gépek alaptipusai pl: CNC marógép, CNC eszterga, mérőgép. 
+           			Pl. Az M1 munka három feladatot tartalmaz: marás (a marógépen végezhető feladat), 
+           			esztergálás (az esztergán végezhető), mérés (a mérőgépen végezhető). 
+           			A munkák a munkásokhoz rendelhetőek, feltéve ha szabadok éppen.
+           		" />
+           		<br/>
+			</p:panel>
+			<p:panel id="usecases" header="Felhasználási esetek" styleClass="box-solid box-success">
+					<p:panel id="workers" header="Munkások menedzselése" styleClass="box-solid box-teal">
+						<h:outputText
+							value="
+		           			Munkások felvitele, listázása. Munkáshoz tartozó információ: név, szakképzettség, órabér, 
+		           			státusz (szabadságon, dolgozik, szabad). A szabad munkásokhoz lehet munkákat rendelni.
+		           		" />
+					</p:panel>
+					<p:panel id="machines" header="Gépek menedzselése" styleClass="box-solid box-teal">
+						<h:outputText
+							value="
+		           			Új gépek megadása/törlése
+		           		" />
+					</p:panel>
+					<p:panel id="job" header="Munkák menedzselése" styleClass="box-solid box-teal">
+						<h:outputText
+							value="
+		           			Új munka létrehozása. A munkához feladatok rendelése/törlése. A feladatokhoz gépek rendelése/törlése.
+		           		" />
+					</p:panel>
+					<p:panel id="listing" header="Listázási funkciók" styleClass="box-solid box-teal">
+						<h:outputText
+							value="
+		           			Szabad munkások, gépek megjelenítése. Egy adott gép foglaltságának %-os kiadása.
+		           		" />
+					</p:panel>
+				</p:panel>
 		</ui:define>
 	</ui:composition>
 </h:body>

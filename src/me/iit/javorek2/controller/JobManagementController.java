@@ -99,6 +99,17 @@ public class JobManagementController {
 		refreshAvailableMachineTypes();
 		refreshFreeMachineNames();
 	}
+	
+	public void addJob(String jobName) {
+		Job jobToAdd = new Job(jobName);
+		
+		try {
+			jobService.addJob(jobToAdd);
+		} catch (ServiceException e) {
+			FacesContext.getCurrentInstance().addMessage("addJob", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Job cannot be added!", "Maybe it exists already."));
+			e.printStackTrace();
+		}
+	}
 
 	public void addTaskUnderJob(String taskName, String taskDuration, String requiredMachineType, String executor, String jobName) {
 		Task taskToAdd = new Task();
@@ -120,7 +131,6 @@ public class JobManagementController {
 	}
 	
 	public void deleteSelectedNode() {
-		
 		Object dataObject = selectedJobTaskNode.getData();
 		
 		if(dataObject.getClass() == Task.class) {
