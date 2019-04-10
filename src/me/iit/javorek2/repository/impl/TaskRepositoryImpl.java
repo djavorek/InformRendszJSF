@@ -76,7 +76,39 @@ public class TaskRepositoryImpl implements TaskRepository {
 
 		return taskList;
 	}
+	
+	@Override
+	public Task getTaskByName(String taskName) throws RepositoryException {
+		Connection connection = null;
 
+		PreparedStatement preparedStatement;
+		ResultSet resultSet;
+
+		try {
+			connection = dao.getConnection();
+		} catch (DaoException e) {
+			throw new RepositoryException("Error in underlying layer, database is not ready.", e);
+		}
+
+		try {
+			preparedStatement = connection.prepareStatement("SELECT task.name, machine_type.name, task.duration, machine.name FROM task "
+					+ "INNER JOIN machine_type ON task.req_mach_type=machine_type.id "
+					+ "LEFT JOIN machine ON task.executor=machine.id "
+					+ "WHERE task.name=?");
+			preparedStatement.setString(1, taskName);
+			resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				return new Task(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3), new Machine(resultSet.getString(4), resultSet.getString(2)));
+			}
+			else {
+				throw new RepositoryException("Task cannot be found with this name");
+			}
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see me.iit.javorek2.repository.TaskRepository#addTask(me.iit.javorek2.model.Task)
 	 */
@@ -92,8 +124,8 @@ public class TaskRepositoryImpl implements TaskRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("INSERT INTO task (name, req_mach_type, duration) VALUES "
-					+ "(?, (SELECT id FROM machine_type WHERE name = ?), ?)");
+			preparedStatement = connection.prepareStatement("INSERT INTO task (name, req_mach_type, duration, executor) VALUES "
+					+ "(?, (SELECT id FROM machine_type WHERE name = ?), ?, (SELECT id FROM machine WHERE name = ?))");
 			preparedStatement.setString(1, task.getName());
 			preparedStatement.setString(2, task.getRequiredMachineType());
 			preparedStatement.setInt(3, task.getDuration());
@@ -131,7 +163,7 @@ public class TaskRepositoryImpl implements TaskRepository {
 	 * @see me.iit.javorek2.repository.TaskRepository#updateDuration(me.iit.javorek2.model.Task)
 	 */
 	@Override
-	public void updateDuration(Task task) throws RepositoryException {
+	public void updateTask(Task task) throws RepositoryException {
 		Connection connection = null;
 		PreparedStatement preparedStatement;
 
@@ -142,13 +174,13 @@ public class TaskRepositoryImpl implements TaskRepository {
 		}
 
 		try {
-			preparedStatement = connection.prepareStatement("UPDATE task SET duration=? WHERE name=?");
+			preparedStatement = connection.prepareStatement("UPDATE task SET duration=?, executor=(SELECT id FROM machine WHERE name = ?) WHERE name=?");
 			preparedStatement.setInt(1, task.getDuration());
-			preparedStatement.setString(2, task.getName());
+			preparedStatement.setString(2, task.getExecutor().getName());
+			preparedStatement.setString(3, task.getName());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
 		}
 	}
-
 }

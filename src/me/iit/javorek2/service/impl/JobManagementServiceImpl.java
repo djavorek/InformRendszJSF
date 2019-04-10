@@ -60,9 +60,8 @@ public class JobManagementServiceImpl implements JobManagementService {
 
 	@Override
 	public void addTaskUnderJob(Task task, Job job) throws ServiceException {
-		
-		if (task.getExecutor() != null && task.getRequiredMachineType() != task.getExecutor().getType()) {
-			throw new ServiceException("The chosen executor is not from the required type!");
+		if (!isValidTask(task)) {
+			throw new ServiceException("The task is not valid!");
 		} 
 		
 		try {
@@ -73,6 +72,7 @@ public class JobManagementServiceImpl implements JobManagementService {
 				machineToUpdate.setName(task.getExecutor().getName());
 				machineToUpdate.setWorking(true);
 				machineService.updateMachineStatus(machineToUpdate);
+				updateMachineStatus(task.getExecutor().getName(), true);
 			}
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
@@ -85,10 +85,7 @@ public class JobManagementServiceImpl implements JobManagementService {
 			jobRepository.deleteTaskUnderJob(task, job);
 			
 			if(task.getExecutor() != null && task.getExecutor().getName() != null) {
-				Machine machineToUpdate = new Machine();
-				machineToUpdate.setName(task.getExecutor().getName());
-				machineToUpdate.setWorking(false);
-				machineService.updateMachineStatus(machineToUpdate);
+				updateMachineStatus(task.getExecutor().getName(), false);
 			}
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
@@ -110,6 +107,52 @@ public class JobManagementServiceImpl implements JobManagementService {
 			jobRepository.addJob(job);
 		} catch (RepositoryException e) {
 			throw new ServiceException(e);
+		}
+	}
+	
+	@Override
+	public void updateTask(Task task) throws ServiceException {
+		if (!isValidTask(task)) {
+			throw new ServiceException("The task is not valid!");
+		}
+		
+		Task oldStatusOfTask = null;
+		
+		try {
+			oldStatusOfTask = taskRepository.getTaskByName(task.getName());
+			
+			if (!oldStatusOfTask.getExecutor().getName().equals(task.getExecutor().getName())) {
+				if(oldStatusOfTask.getExecutor() != null && oldStatusOfTask.getExecutor().getName() != null && !"".equals(oldStatusOfTask.getExecutor().getName())) {
+					updateMachineStatus(oldStatusOfTask.getExecutor().getName(), false);
+					updateMachineStatus(task.getExecutor().getName(), true);
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+		
+		try {
+			taskRepository.updateTask(task);
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	private boolean isValidTask(Task task) {
+		if (task.getExecutor() != null && !task.getRequiredMachineType().equals(task.getExecutor().getType())) {
+			return false;
+		}
+		return true;
+	}
+	
+	private void updateMachineStatus(String machineName, boolean newStatus) throws ServiceException {
+		Machine machineToUpdate = new Machine();
+		machineToUpdate.setName(machineName);
+		machineToUpdate.setWorking(newStatus);
+		try {
+			machineService.updateMachineStatus(machineToUpdate);
+		} catch (ServiceException e) {
+			throw new ServiceException("Machine status is not updateable");
 		}
 	}
 }

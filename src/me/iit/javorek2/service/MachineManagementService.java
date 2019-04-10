@@ -7,6 +7,7 @@ import me.iit.javorek2.model.exception.ServiceException;
 
 public interface MachineManagementService {
 	
+	Machine getMachineByName(String name) throws ServiceException;
 	List<Machine> getAllMachines() throws ServiceException;
 	List<Machine> getFreeMachines() throws ServiceException;
 	List<String> getPossibleMachineTypes() throws ServiceException;

@@ -42,6 +42,15 @@ public class MachineManagementServiceImpl implements MachineManagementService {
 	}
 	
 	@Override
+	public Machine getMachineByName(String name) throws ServiceException {
+		try {
+			return machineRepository.getMachineByName(name);
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	@Override
 	public List<Machine> getFreeMachines() throws ServiceException {
 		return getAllMachines()
 			.stream()

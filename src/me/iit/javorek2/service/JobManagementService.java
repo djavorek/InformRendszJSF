@@ -13,5 +13,6 @@ public interface JobManagementService {
 	void addTaskUnderJob(Task task, Job job) throws ServiceException;
 	void deleteTaskUnderJob(Task task, Job job) throws ServiceException;
 	void deleteJob(Job job) throws ServiceException;
+	void updateTask(Task task) throws ServiceException;
 	
 }

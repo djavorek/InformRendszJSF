@@ -10,111 +10,139 @@
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
 			<h:form id="tableForm">
-				<p:dataTable id="machineTable" var="Machine"
-					value="#{machineManagementController.availableMachines}"
-					selection="#{machineManagementController.selectedMachines}"
-					selectionMode="multiple" rowKey="#{Machine.name}"
-					rowSelectMode="add">
+				<div class="ui-g-10 col-xs-offset-1">
+					<p:dataTable id="machineTable" var="Machine"
+						value="#{machineManagementController.availableMachines}"
+						selection="#{machineManagementController.selectedMachines}"
+						selectionMode="multiple" rowKey="#{Machine.name}"
+						rowSelectMode="add" styleClass="box-solid box-primary"
+						paginator="true" paginatorPosition="top"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" rows="10"
+						emptyMessage="No machines found">
 
-					<p:ajax event="rowUnselect"
-						listener="#{machineManagementController.machineSelectionListener}"
-						update=":tableForm:machineTable:deleteButton" />
-					<p:ajax event="rowSelect"
-						listener="#{machineManagementController.machineSelectionListener}"
-						update=":tableForm:machineTable:deleteButton" />
-					<p:ajax event="toggleSelect"
-						listener="#{machineManagementController.machineSelectionListener}"
-						update="@form" />
-
-					<p:column headerText="Name">
-						<h:outputText value="#{Machine.name}" />
-					</p:column>
-
-					<p:column headerText="Type">
-						<h:outputText value="#{Machine.type}" />
-					</p:column>
-
-					<p:column headerText="Currently Working">
-						<p:selectBooleanCheckbox value="#{Machine.working}"
-							disabled="true" />
-					</p:column>
-
-					<f:facet name="footer">
-						<p:commandButton id="deleteButton" value="Delete Selected"
-							disabled="#{not machineManagementController.deleteButtonEnabled}"
-							icon="fa fa-fw fa-remove"
-							action="#{machineManagementController.deleteSelectedMachines}"
+						<p:ajax event="rowUnselect"
+							listener="#{machineManagementController.machineSelectionListener}"
+							update=":tableForm:machineTable:deleteButton" />
+						<p:ajax event="rowSelect"
+							listener="#{machineManagementController.machineSelectionListener}"
+							update=":tableForm:machineTable:deleteButton" />
+						<p:ajax event="toggleSelect"
+							listener="#{machineManagementController.machineSelectionListener}"
 							update="@form" />
-						<p:commandButton id="addButton" value="Add New"
-							action="#{machineManagementController.fetchPossibleMachineTypes}"
-							onsuccess="PF('addDialog').show();" icon="fa fa-fw fa-plus" />
-					</f:facet>
-				</p:dataTable>
+
+						<p:column headerText="Name">
+							<h:outputText value="#{Machine.name}" />
+						</p:column>
+
+						<p:column headerText="Type">
+							<h:outputText value="#{Machine.type}" />
+						</p:column>
+
+						<p:column headerText="Currently Working">
+							<p:selectBooleanCheckbox value="#{Machine.working}"
+								disabled="true" />
+						</p:column>
+
+						<f:facet name="footer">
+							<p:commandButton id="deleteButton" value="Delete Selected"
+								disabled="#{not machineManagementController.deleteButtonEnabled}"
+								icon="fa fa-fw fa-remove"
+								action="#{machineManagementController.deleteSelectedMachines}"
+								update="@form" />
+							<p:commandButton id="addButton" value="Add New"
+								action="#{machineManagementController.fetchPossibleMachineTypes}"
+								onsuccess="PF('addDialog').show();" icon="fa fa-fw fa-plus" />
+						</f:facet>
+					</p:dataTable>
+				</div>
 			</h:form>
 
-			<div class="ui-material">
-				<p:dialog id="newMachineDial" header="Adding a new Machine"
-					widgetVar="addDialog" modal="true" resizable="false">
-					<h:form id="MachineForm">
-						<p:messages autoUpdate="true" showDetails="true" />
-						<p:inputText id="Name" binding="#{machineName}"
-							placeholder="Machine name" required="true"
-							requiredMessage="You must provide a name!">
-						</p:inputText>
-						<br />
-						<p:selectOneMenu id="Type" binding="#{machineType}"
-							required="true" requiredMessage="You must provide a type!"
-							dynamic="true">
+			<p:dialog id="newMachineDial" header="Adding a new Machine"
+				widgetVar="addDialog" modal="true" resizable="false"
+				appendTo="@(body)" styleClass="box-primary" responsive="true"
+				width="400">
+				<h:form id="MachineForm">
+					<p:growl showDetail="true" life="3000" severity="info">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="true" life="5000" severity="warn">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="false" life="8000" severity="error">
+						<p:autoUpdate />
+					</p:growl>
+					<p:panelGrid columns="2" cellpadding="5" layout="grid"
+						styleClass="no-border ui-fluid">
+						<p:outputLabel for="Name" value="Machine name" />
+						<p:inputText id="Name" binding="#{machineName}" required="true"
+							requiredMessage="You must provide a name!" />
+						<p:outputLabel for="Type" value="Machine Type" />
+						<p:selectOneMenu id="Type" binding="#{machineType}" dynamic="true">
 							<f:selectItem itemLabel="Select One" itemValue="" />
 							<f:selectItems
 								value="#{machineManagementController.possibleMachineTypes}" />
 						</p:selectOneMenu>
-						<p:commandButton id="manageTypesButton" value="Manage Types"
-							immediate="true" onclick="PF('typeManagementDialog').show();"
-							icon="fa fa-fw fa-wrench" />
-						<br />
-						<p:commandButton id="addButton" title="Add" process="@form"
-							update="@form, :tableForm:machineTable"
-							action="#{machineManagementController.addMachine(machineName.value, machineType.value)}"
-							oncomplete="if (args &amp;&amp; !args.validationFailed) PF('addDialog').hide();" />
-					</h:form>
-				</p:dialog>
-			</div>
+					</p:panelGrid>
+					<p:separator />
 
-			<div class="ui-material">
-				<p:dialog id="manageTypesDial" header="Managing Machine Types"
-					widgetVar="typeManagementDialog" modal="true" resizable="false">
+					<p:commandButton id="addButton" value="Add" process="@form"
+						update="@form, :tableForm:machineTable"
+						action="#{machineManagementController.addMachine(machineName.value, machineType.value)}"
+						oncomplete="if (args &amp;&amp; !args.validationFailed) PF('addDialog').hide();"
+						icon="fa fa-plus" styleClass="btn-primary btn-material pull-left" />
 
-					<h:form id="typeAddForm">
-						<p:messages for="typeManagement" showDetails="true" />
+					<p:commandButton id="manageTypesButton" value="Manage Types"
+						immediate="true" onclick="PF('typeManagementDialog').show();"
+						icon="fa fa-wrench"
+						styleClass="btn-primary btn-material pull-right" />
+				</h:form>
+			</p:dialog>
 
+			<p:dialog id="manageTypesDial" header="Managing Machine Types"
+				widgetVar="typeManagementDialog" modal="true" resizable="false"
+				appendTo="@(body)" styleClass="box-primary" responsive="true"
+				width="400">
+				<h:form id="typeAddForm">
+					<p:growl showDetail="true" life="3000" severity="info">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="true" life="5000" severity="warn">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="false" life="8000" severity="error">
+						<p:autoUpdate />
+					</p:growl>
+					<p:panelGrid columns="2" cellpadding="5" layout="grid"
+						styleClass="no-border ui-fluid">
+						<p:outputLabel for="Name" value="Type to add" />
 						<p:inputText id="Name" binding="#{machineTypeToAdd}"
-							placeholder="Machine name" required="true"
-							requiredMessage="You must provide a name!">
+							required="true" requiredMessage="You must provide a name!">
 						</p:inputText>
-						<br/>
-						<p:commandButton title="Add" ajax="true" process="@form"
+						<p:commandButton value="Add" ajax="true" process="@form"
 							update="@form, MachineForm"
-							actionListener="#{machineManagementController.addMachineType(machineTypeToAdd.value)}" />
-					</h:form>
-					<br />
-					<h:form id="typeDeleteForm">
+							actionListener="#{machineManagementController.addMachineType(machineTypeToAdd.value)}"
+							icon="fa fa-plus" styleClass="btn-primary btn-material" />
+					</p:panelGrid>
+				</h:form>
+				<br />
+				<h:form id="typeDeleteForm">
+					<p:panelGrid columns="2" cellpadding="5" layout="grid"
+						styleClass="no-border ui-fluid">
+						<p:outputLabel for="Type" value="Type to delete" />
 						<p:selectOneMenu id="Type" binding="#{machineTypeToDelete}"
-							required="true" requiredMessage="You must provide a type!"
 							dynamic="true">
 							<f:selectItem itemLabel="Select One" itemValue="" />
 							<f:selectItems
 								value="#{machineManagementController.possibleMachineTypes}" />
 						</p:selectOneMenu>
-						<p:commandButton title="Remove" ajax="true" process="@form"
+						<p:commandButton value="Remove" ajax="true" process="@form"
 							update="@form, MachineForm, :typeAddForm"
-							actionListener="#{machineManagementController.deleteMachineType(machineTypeToDelete.value)}" />
-						<br/>
-						<p:commandButton title="Close"
-							onclick="PF('typeManagementDialog').hide();" />
-					</h:form>
-				</p:dialog>
-			</div>
+							actionListener="#{machineManagementController.deleteMachineType(machineTypeToDelete.value)}"
+							icon="fa fa-minus" styleClass="btn-primary btn-material" />
+					</p:panelGrid>
+				</h:form>
+			</p:dialog>
 		</ui:define>
 	</ui:composition>
 </h:body>

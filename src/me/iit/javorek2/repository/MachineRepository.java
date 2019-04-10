@@ -5,6 +5,7 @@ import java.util.List;
 import me.iit.javorek2.model.Machine;
 import me.iit.javorek2.model.exception.RepositoryException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface MachineRepository.
  */
@@ -17,6 +18,15 @@ public interface MachineRepository {
 	 * @throws RepositoryException the repository exception
 	 */
 	List<Machine> getMachines() throws RepositoryException;
+	
+	/**
+	 * Gets the machine by name.
+	 *
+	 * @param name the name
+	 * @return the machine by name
+	 * @throws RepositoryException the repository exception
+	 */
+	Machine getMachineByName(String name) throws RepositoryException;
 	
 	/**
 	 * Adds the machine.

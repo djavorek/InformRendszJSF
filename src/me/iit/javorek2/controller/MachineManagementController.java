@@ -62,15 +62,16 @@ public class MachineManagementController {
 		try {
 			availableMachines = service.getAllMachines();
 		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine list cannot be fetched!", "Try again later.."));
+			FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine list cannot be fetched!", "Try again later.."));
 		}
 	}
 
 	public void deleteSelectedMachines() {
 		try {
 			service.deleteMachines(selectedMachines);
+			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_INFO, "Machine deleted successfully!", ""));
 		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine cannot be delete!", "Maybe it is used?"));
+			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine cannot be deleted!", "Maybe it is working or used"));
 		}
 		updateMachineList();
 	}
@@ -80,9 +81,10 @@ public class MachineManagementController {
 
 		try {
 			service.addMachine(machineToAdd);
+			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_INFO, "Machine added successfully!", ""));
 		} catch (ServiceException e) {
 			FacesContext.getCurrentInstance().validationFailed();
-			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine cannot be added!", "Check if it was valid or not."));
+			FacesContext.getCurrentInstance().addMessage("machineManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine cannot be added!", "Check if it was valid or not."));
 		}
 		updateMachineList();
 	}
@@ -91,7 +93,7 @@ public class MachineManagementController {
 		try {
 			possibleMachineTypes = service.getPossibleMachineTypes();
 		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine Types cannot be fetched!", "Try again later.."));
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine Types cannot be fetched!", "Try again later.."));
 		}
 	}
 	
@@ -99,17 +101,24 @@ public class MachineManagementController {
 		try {
 			service.addMachineType(type);
 			fetchPossibleMachineTypes();
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_INFO, "Machine Type added successfully!", ""));
 		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine Type cannot be added!", "Check if it was valid or not."));
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine Type cannot be added!", "Check if it was valid or not."));
 		}
 	}
 	
 	public void deleteMachineType(String type) {
+		if("".equals(type)) {
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Choose a type before!", "Empty type cannot be deleted"));
+		}
+		
 		try {
 			service.deleteMachineType(type);
 			fetchPossibleMachineTypes();
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_INFO, "Machine Type deleted successfully!", ""));
 		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Machine Type cannot be deleted!", "Maybe it is used?"));
+			e.printStackTrace();
+			FacesContext.getCurrentInstance().addMessage("typeManagement", new FacesMessage(FacesMessage.SEVERITY_WARN, "Machine Type cannot be deleted!", "Maybe it is used?"));
 		}
 	}
 	

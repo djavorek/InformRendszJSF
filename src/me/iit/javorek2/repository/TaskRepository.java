@@ -22,6 +22,15 @@ public interface TaskRepository {
 	List<Task> getTasksForJob(Job job) throws RepositoryException;
 	
 	/**
+	 * Gets the task by name.
+	 *
+	 * @param taskName the task name
+	 * @return the task by name
+	 * @throws RepositoryException the repository exception
+	 */
+	Task getTaskByName(String taskName) throws RepositoryException;
+	
+	/**
 	 * Adds the task.
 	 *
 	 * @param task the task
@@ -38,10 +47,10 @@ public interface TaskRepository {
 	void deleteTask(Task task) throws RepositoryException;
 	
 	/**
-	 * Update duration.
+	 * Update task.
 	 *
 	 * @param task the task
 	 * @throws RepositoryException the repository exception
 	 */
-	void updateDuration(Task task) throws RepositoryException;
+	void updateTask(Task task) throws RepositoryException;
 }

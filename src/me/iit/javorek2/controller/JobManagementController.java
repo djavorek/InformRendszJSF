@@ -36,6 +36,8 @@ public class JobManagementController {
 	private List<String> machineTypes;
 	private List<String> freeMachineNames;
 	private TreeNode selectedJobTaskNode;
+	private Task taskToView;
+	private boolean taskToViewSelected;
 
 	public void setJobService(JobManagementService service) {
 		this.jobService = service;
@@ -93,11 +95,31 @@ public class JobManagementController {
 		this.freeMachineNames = freeMachineNames;
 	}
 
+
+	public Task getTaskToView() {
+		return taskToView;
+	}
+
+	public void setTaskToView(Task taskToView) {
+		this.taskToView = taskToView;
+	}
+
+	public boolean isTaskToViewSelected() {
+		return taskToViewSelected;
+	}
+
+	public void setTaskToViewSelected(boolean taskToViewSelected) {
+		this.taskToViewSelected = taskToViewSelected;
+	}
+
 	@PostConstruct
 	public void init() {
 		refreshAvailableJobs();
 		refreshAvailableMachineTypes();
 		refreshFreeMachineNames();
+		
+		//Initializing a dummy task, for valid xhtml, will change it surely later on.
+		taskToView = new Task("", "", 0, new Machine());
 	}
 	
 	public void addJob(String jobName) {
@@ -105,10 +127,12 @@ public class JobManagementController {
 		
 		try {
 			jobService.addJob(jobToAdd);
+			FacesContext.getCurrentInstance().addMessage("addJob", new FacesMessage(FacesMessage.SEVERITY_INFO, "Job added successfully!", ""));
 		} catch (ServiceException e) {
 			FacesContext.getCurrentInstance().addMessage("addJob", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Job cannot be added!", "Maybe it exists already."));
 			e.printStackTrace();
 		}
+		refreshAvailableJobs();
 	}
 
 	public void addTaskUnderJob(String taskName, String taskDuration, String requiredMachineType, String executor, String jobName) {
@@ -117,15 +141,25 @@ public class JobManagementController {
 		taskToAdd.setDuration(Integer.parseInt(taskDuration));
 		taskToAdd.setRequiredMachineType(requiredMachineType);
 		
+		if("".equals(requiredMachineType) || "".equals(jobName)) {
+			FacesContext.getCurrentInstance().addMessage("addTask", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Task cannot be added", "If you dont fill the form."));
+		}
+		
 		if (!executor.equals("")) {
-			taskToAdd.setExecutor(new Machine(executor, requiredMachineType));
+			try {
+				taskToAdd.setExecutor(machineService.getMachineByName(executor));
+			} catch (ServiceException e) {
+				e.printStackTrace();
+				FacesContext.getCurrentInstance().addMessage("addTask", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Task cannot be added!", "It looks invalid."));
+			}
 		}
 		
 		try {
 			jobService.addTaskUnderJob(taskToAdd, new Job(jobName));
+			FacesContext.getCurrentInstance().addMessage("addTask", new FacesMessage(FacesMessage.SEVERITY_INFO, "Task added successfully!", ""));
 		} catch (ServiceException e) {
 			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage("addTask", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Task cannot be added!", "Maybe it exists already."));
+			FacesContext.getCurrentInstance().addMessage("addTask", new FacesMessage(FacesMessage.SEVERITY_WARN, "Task cannot be added!", "Maybe it exists already."));
 		}
 		refreshAvailableJobs();
 	}
@@ -136,6 +170,7 @@ public class JobManagementController {
 		if(dataObject.getClass() == Task.class) {
 			try {
 				jobService.deleteTaskUnderJob((Task)dataObject, (Job)selectedJobTaskNode.getParent().getData());
+				FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_INFO, "Task deleted successfully!", ""));
 			} catch (ServiceException e) {
 				e.printStackTrace();
 				FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_WARN, "Task cannot be deleted!", "Try again later.."));
@@ -143,6 +178,7 @@ public class JobManagementController {
 		} else if (selectedJobTaskNode.getData() instanceof Job) {
 			try {
 				jobService.deleteJob((Job)dataObject);
+				FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_INFO, "Job deleted successfully!", ""));
 			} catch (ServiceException e) {
 				e.printStackTrace();
 				FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_WARN, "Job cannot be deleted!", "Maybe it is used somewhere."));
@@ -150,6 +186,32 @@ public class JobManagementController {
 		}
 		
 		refreshAvailableJobs();
+	}
+	
+	public void modifySelectedNode() {
+		Object dataObject = selectedJobTaskNode.getData();
+		
+		if(dataObject.getClass() == Task.class) {
+			taskToView = ((Task) dataObject);
+			taskToViewSelected = true;
+		} else if (selectedJobTaskNode.getData() instanceof Job) {
+			FacesContext.getCurrentInstance().addMessage("general", new FacesMessage(FacesMessage.SEVERITY_INFO, "Jobs cannot be modified!", "Choose a task next time."));
+		}
+	}
+	
+	public void saveViewedTask() {
+		try {
+			// Setting the real machine object to executor, instead of its name
+			if(taskToView.getExecutor() != null && taskToView.getExecutor().getName() != null && !"".equals(taskToView.getExecutor().getName())) {
+				taskToView.setExecutor(machineService.getMachineByName(taskToView.getExecutor().getName()));
+			}
+			jobService.updateTask(taskToView);
+			taskToViewSelected = false;
+			FacesContext.getCurrentInstance().addMessage("modifyTask", new FacesMessage(FacesMessage.SEVERITY_INFO, "Task saved successfully!", ""));
+		} catch (ServiceException e) {
+			FacesContext.getCurrentInstance().addMessage("modifyTask", new FacesMessage(FacesMessage.SEVERITY_WARN, "Task cannot be saved!", "Did you select a proper machine?"));
+			e.printStackTrace();
+		}
 	}
     
     private void refreshAvailableJobs() {

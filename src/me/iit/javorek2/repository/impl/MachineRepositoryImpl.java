@@ -75,6 +75,46 @@ public class MachineRepositoryImpl implements MachineRepository {
 
 		return machineList;
 	}
+	
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.MachineRepository#getMachineByName(java.lang.String)
+	 */
+	@Override
+	public Machine getMachineByName(String name) throws RepositoryException {
+		Connection connection = null;
+
+		PreparedStatement preparedStatement;
+
+		ResultSet resultSet;
+
+		try {
+			connection = dao.getConnection();
+		} catch (DaoException e) {
+			throw new RepositoryException("Error in underlying layer, database is not ready.", e);
+		}
+
+		try {
+			preparedStatement = connection.prepareStatement(
+					"SELECT machine.name, machine_type.name, machine.working FROM machine INNER JOIN machine_type ON machine.type=machine_type.id "
+					+ "WHERE machine.name = ?");
+			preparedStatement.setString(1, name);
+			resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				Machine foundMachine = new Machine();
+				foundMachine.setName(resultSet.getString(1));
+				foundMachine.setType(resultSet.getString(2));
+				foundMachine.setWorking(resultSet.getBoolean(3));
+
+				return foundMachine;
+			}
+			else {
+				throw new RepositoryException("There is no machine with this name");
+			}
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see me.iit.javorek2.repository.MachineRepository#addMachine(me.iit.javorek2.model.Machine)

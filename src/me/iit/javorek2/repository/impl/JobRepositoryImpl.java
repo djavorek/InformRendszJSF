@@ -117,11 +117,12 @@ public class JobRepositoryImpl implements JobRepository {
 			resultSet = preparedStatement.executeQuery();
 
 			if (!resultSet.next()) {
-				preparedStatement = connection.prepareStatement("INSERT INTO task (name, req_mach_type, duration) VALUES "
-						+ "(?, (SELECT id FROM machine_type WHERE name = ?), ?)");
+				preparedStatement = connection.prepareStatement("INSERT INTO task (name, req_mach_type, duration, executor) VALUES "
+						+ "(?, (SELECT id FROM machine_type WHERE name = ?), ?, (SELECT id FROM machine WHERE name = ?))");
 				preparedStatement.setString(1, task.getName());
 				preparedStatement.setString(2, task.getRequiredMachineType());
 				preparedStatement.setInt(3, task.getDuration());
+				preparedStatement.setString(4, task.getExecutor().getName());
 				preparedStatement.executeUpdate();
 			} else {
 				throw new RepositoryException("Task with same name already exists.");

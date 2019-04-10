@@ -174,17 +174,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		}
 
 		try {
-			String newWorkingParam;
-			
-			if(worker.getCurrentJob() == null) {
-				newWorkingParam = "NULL";
-			}
-			else {
-				newWorkingParam = "(SELECT id FROM job WHERE name=?)";
-			}
-				
-				
-			preparedStatement = connection.prepareStatement("UPDATE worker SET working="+ newWorkingParam +" WHERE name=?");
+			preparedStatement = connection.prepareStatement("UPDATE worker SET working=(SELECT id FROM job WHERE name=?) WHERE name=?");
 			preparedStatement.setString(1, worker.getCurrentJob().getName());
 			preparedStatement.setString(2, worker.getName());
 			preparedStatement.executeUpdate();

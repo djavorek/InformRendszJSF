@@ -9,89 +9,171 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-			<p:messages for="general" autoUpdate="true" showDetails="true" />
-			<h:form id="jobTreeForm">
-				<div class="ui-material ui-g-3 ui-sm-12">
+			<p:messages autoUpdate="true" showDetails="true" />
+			<div id="jobs" class="ui-fluid ui-g-2 ui-sm-12">
+				<h:form id="jobTreeForm">
 					<h4>Jobs and Tasks</h4>
 					<p:tree id="jobTaskTree"
 						value="#{jobManagementController.jobTreeRoot}" var="node"
 						selectionMode="single"
 						selection="#{jobManagementController.selectedJobTaskNode}"
-						animate="true" dynamic="true">
+						animate="true" dynamic="true" styleClass="card">
 						<p:treeNode>
 							<h:outputText value="#{node.name}" />
 						</p:treeNode>
 					</p:tree>
 
 					<p:contextMenu for="jobTaskTree">
-						<p:menuitem value="View" update="jobTaskTree"
-							action="#{jobManagementController.deleteSelectedNode()}"
-							icon="fa fa-fw fa-search" />
+						<p:menuitem value="View"
+							action="#{jobManagementController.modifySelectedNode()}"
+							update=":modifyTaskForm" icon="fa fa-fw fa-search" />
 						<p:menuitem value="Delete" update="jobTaskTree"
 							action="#{jobManagementController.deleteSelectedNode()}"
 							icon="fa fa-fw fa-times" />
 					</p:contextMenu>
-				</div>
-			</h:form>
+				</h:form>
+			</div>
 
-			<h:form id="addJobForm">
-				<div class="ui-material ui-g-4 ui-sm-12">
+			<div class="ui-fluid ui-g-4 ui-sm-12">
+				<h:form id="modifyTaskForm">
+
+					<h4>View / Edit Task</h4>
+					<p:growl showDetail="true" life="3000" severity="info">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="true" life="5000" severity="warn">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="false" life="8000" severity="error">
+						<p:autoUpdate />
+					</p:growl>
+
+					<p:panel styleClass="card box-warning">
+						<p:panel id="noTaskSelectedPanel" header="No task selected"
+							styleClass="box-warning box-solid"
+							rendered="#{!jobManagementController.taskToViewSelected}">
+						Select one from the menu on the left side
+						</p:panel>
+						<p:panel header="Your selected task"
+							styleClass="box-success box-solid"
+							rendered="#{jobManagementController.taskToViewSelected}">
+							<p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+								<p:outputLabel for="name" value="Task name" />
+								<br />
+								<h:outputText id="name"
+									value="#{jobManagementController.taskToView.name}" />
+								<br />
+								<p:outputLabel for="machineType" value="Required Machine Type" />
+								<br />
+								<h:outputText id="machineType"
+									value="#{jobManagementController.taskToView.requiredMachineType}" />
+								<br />
+								<p:outputLabel for="executor" value="Executor" />
+								<br />
+								<p:selectOneMenu id="executor"
+									value="#{jobManagementController.taskToView.executor.name}"
+									dynamic="true">
+									<f:selectItem
+										itemLabel="#{jobManagementController.taskToView.executor.name.concat(' (As it was)')}"
+										itemValue="#{jobManagementController.taskToView.executor.name}" />
+									<f:selectItems
+										value="#{jobManagementController.freeMachineNames}" />
+								</p:selectOneMenu>
+								<br />
+								<p:outputLabel for="duration" value="Task duration" />
+								<br />
+								<p:inplace id="basic">
+									<p:inputNumber id="duration"
+										value="#{jobManagementController.taskToView.duration}"
+										required="true"
+										requiredMessage="You must provide the duration!" minValue="0"
+										maxValue="10000">
+									</p:inputNumber>
+								</p:inplace>
+								<br />
+								<p:commandButton value="Modify" process="@form" update="@form"
+									action="#{jobManagementController.saveViewedTask()}"
+									icon="fa fa-arrow-circle-up" styleClass="btn-primary" />
+
+							</p:panelGrid>
+						</p:panel>
+					</p:panel>
+				</h:form>
+			</div>
+
+			<div class="ui-fluid ui-g-4 ui-sm-12">
+				<h:form id="addJobForm">
 					<h4>Add New Job</h4>
-					<p:messages autoUpdate="true" showDetails="true" />
-					<span>Job Name</span>
-					<p:inputText id="Name" binding="#{newJobName}" placeholder="Job name"
-						required="true" requiredMessage="You must provide a name!">
-					</p:inputText>
-					<br />
-					<p:commandButton title="Add" process="@form"
-						update="@form, :jobTreeForm:jobTaskTree"
-						action="#{jobManagementController.addJob(newJobName.value)}" />
-				</div>
-			</h:form>
+					<p:growl showDetail="true" life="3000" severity="info">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="true" life="5000" severity="warn">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="false" life="8000" severity="error">
+						<p:autoUpdate />
+					</p:growl>
+					<p:panel styleClass="card box-success">
+						<p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+							<p:outputLabel for="Name" value="Job name" />
+							<p:inputText id="Name" binding="#{newJobName}" required="true"
+								requiredMessage="You must provide a name!" />
+							<p:commandButton value="Add" process="@form"
+								update="@form, :jobTreeForm:jobTaskTree"
+								action="#{jobManagementController.addJob(newJobName.value)}"
+								icon="fa fa-plus" styleClass="btn-primary" />
+						</p:panelGrid>
+					</p:panel>
+				</h:form>
 
-			<h:form id="addTaskForm">
-				<div class="ui-material ui-g-4 ui-sm-12">
+				<h:form id="addTaskForm">
 					<h4>Add New Task</h4>
-					<p:messages autoUpdate="true" showDetails="true" />
-					<span>Task Name</span>
-					<p:inputText id="Name" binding="#{taskName}"
-						placeholder="Task name" required="true"
-						requiredMessage="You must provide a name!">
-					</p:inputText>
-					<br /> 
-					<span>Parent Job Name</span>
-					<p:selectOneMenu id="job" binding="#{jobName}" required="true"
-						requiredMessage="You must provide a parent job!" dynamic="true"
-						style="width:300px">
-						<f:selectItem itemLabel="Select One" itemValue="" />
-						<f:selectItems value="#{jobManagementController.jobNames}" />
-					</p:selectOneMenu>
-					<br /> 
-					<span>Required Machine Type</span>
-					<p:selectOneMenu id="machineType" binding="#{machineType}"
-						required="true" requiredMessage="You must provide a type!"
-						dynamic="true" style="width:300px">
-						<f:selectItem itemLabel="Select One" itemValue="" />
-						<f:selectItems value="#{jobManagementController.machineTypes}" />
-					</p:selectOneMenu>
-					<br />
-					<span>Executor</span>
-					<p:selectOneMenu id="executor" binding="#{executor}" dynamic="true"
-						style="width:300px">
-						<f:selectItem itemLabel="Choose Or Leave" itemValue="" />
-						<f:selectItems value="#{jobManagementController.freeMachineNames}" />
-					</p:selectOneMenu>
-					<br /> <span>Task Duration</span>
-					<p:inputNumber id="duration" binding="#{taskDuration}"
-						required="true" requiredMessage="You must provide the duration!"
-						minValue="0" maxValue="10000">
-					</p:inputNumber>
-					<br />
-					<p:commandButton title="Add" process="@form"
-						update="@form, :jobTreeForm:jobTaskTree"
-						action="#{jobManagementController.addTaskUnderJob(taskName.value, taskDuration.value, machineType.value, executor.value, jobName.value)}" />
-				</div>
-			</h:form>
+					<p:growl showDetail="true" life="3000" severity="info">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="true" life="5000" severity="warn">
+						<p:autoUpdate />
+					</p:growl>
+					<p:growl showDetail="false" life="8000" severity="error">
+						<p:autoUpdate />
+					</p:growl>
+					<p:panel styleClass="card box-teal">
+						<p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
+							<p:outputLabel for="Name" value="Task name" />
+							<p:inputText id="Name" binding="#{taskName}"
+								placeholder="Task name" required="true"
+								requiredMessage="You must provide a name!" />
+							<p:outputLabel for="job" value="Parent Job Name" />
+							<p:selectOneMenu id="job" binding="#{jobName}" dynamic="true">
+								<f:selectItem itemLabel="Select One" itemValue="" />
+								<f:selectItems value="#{jobManagementController.jobNames}" />
+							</p:selectOneMenu>
+							<p:outputLabel for="machineType" value="Required Machine Type" />
+							<p:selectOneMenu id="machineType" binding="#{machineType}"
+								dynamic="true">
+								<f:selectItem itemLabel="Select One" itemValue="" />
+								<f:selectItems value="#{jobManagementController.machineTypes}" />
+							</p:selectOneMenu>
+							<p:outputLabel for="executor" value="Executor" />
+							<p:selectOneMenu id="executor" binding="#{executor}"
+								dynamic="true">
+								<f:selectItem itemLabel="Choose Or Leave" itemValue="" />
+								<f:selectItems
+									value="#{jobManagementController.freeMachineNames}" />
+							</p:selectOneMenu>
+							<p:outputLabel for="duration" value="Task duration" />
+							<p:inputNumber id="duration" binding="#{taskDuration}"
+								required="true" requiredMessage="You must provide the duration!"
+								minValue="0" maxValue="10000">
+							</p:inputNumber>
+							<p:commandButton value="Add" process="@form"
+								update="@form, :jobTreeForm:jobTaskTree"
+								action="#{jobManagementController.addTaskUnderJob(taskName.value, taskDuration.value, machineType.value, executor.value, jobName.value)}"
+								icon="fa fa-plus" styleClass="btn-primary" />
+						</p:panelGrid>
+					</p:panel>
+				</h:form>
+			</div>
 		</ui:define>
 	</ui:composition>
 </h:body>
