@@ -5,7 +5,15 @@
 <body>
 	<ui:composition>
 		<h:form>
-			<p:growl id="messages" showDetail="true" />
+			<p:growl for="messages" showDetail="true" life="2000" severity="info">
+				<p:autoUpdate />
+			</p:growl>
+			<p:growl for="messages" showDetail="true" life="3000" severity="warn">
+				<p:autoUpdate />
+			</p:growl>
+			<p:growl for="messages" showDetail="true" life="4000" severity="error">
+				<p:autoUpdate />
+			</p:growl>
 			<div class="ui-g ui-fluid">
 				<p:menubar>
 				    <p:menuitem value="Home" outcome="index.xhtml" icon="fa fa-fw fa-home"/>

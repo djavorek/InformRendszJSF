@@ -9,7 +9,6 @@
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-			<p:messages autoUpdate="true" showDetails="true" />
 			<div id="jobs" class="ui-fluid ui-g-2 ui-sm-12">
 				<h:form id="jobTreeForm">
 					<h4>Jobs and Tasks</h4>
@@ -38,15 +37,6 @@
 				<h:form id="modifyTaskForm">
 
 					<h4>View / Edit Task</h4>
-					<p:growl showDetail="true" life="3000" severity="info">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="true" life="5000" severity="warn">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="false" life="8000" severity="error">
-						<p:autoUpdate />
-					</p:growl>
 
 					<p:panel styleClass="card box-warning">
 						<p:panel id="noTaskSelectedPanel" header="No task selected"
@@ -104,15 +94,7 @@
 			<div class="ui-fluid ui-g-4 ui-sm-12">
 				<h:form id="addJobForm">
 					<h4>Add New Job</h4>
-					<p:growl showDetail="true" life="3000" severity="info">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="true" life="5000" severity="warn">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="false" life="8000" severity="error">
-						<p:autoUpdate />
-					</p:growl>
+					<p:message id="message" for="addJobForm"></p:message>
 					<p:panel styleClass="card box-success">
 						<p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
 							<p:outputLabel for="Name" value="Job name" />
@@ -128,15 +110,7 @@
 
 				<h:form id="addTaskForm">
 					<h4>Add New Task</h4>
-					<p:growl showDetail="true" life="3000" severity="info">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="true" life="5000" severity="warn">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="false" life="8000" severity="error">
-						<p:autoUpdate />
-					</p:growl>
+					<p:message id="message" for="addTaskForm"></p:message>
 					<p:panel styleClass="card box-teal">
 						<p:panelGrid columns="2" layout="grid" styleClass="ui-fluid">
 							<p:outputLabel for="Name" value="Task name" />
@@ -144,13 +118,14 @@
 								placeholder="Task name" required="true"
 								requiredMessage="You must provide a name!" />
 							<p:outputLabel for="job" value="Parent Job Name" />
-							<p:selectOneMenu id="job" binding="#{jobName}" dynamic="true">
+							<p:selectOneMenu id="job" binding="#{jobName}" dynamic="true"
+								required="true">
 								<f:selectItem itemLabel="Select One" itemValue="" />
 								<f:selectItems value="#{jobManagementController.jobNames}" />
 							</p:selectOneMenu>
 							<p:outputLabel for="machineType" value="Required Machine Type" />
 							<p:selectOneMenu id="machineType" binding="#{machineType}"
-								dynamic="true">
+								dynamic="true" required="true">
 								<f:selectItem itemLabel="Select One" itemValue="" />
 								<f:selectItems value="#{jobManagementController.machineTypes}" />
 							</p:selectOneMenu>
@@ -163,8 +138,7 @@
 							</p:selectOneMenu>
 							<p:outputLabel for="duration" value="Task duration" />
 							<p:inputNumber id="duration" binding="#{taskDuration}"
-								required="true" requiredMessage="You must provide the duration!"
-								minValue="0" maxValue="10000">
+								required="true" minValue="0" maxValue="10000">
 							</p:inputNumber>
 							<p:commandButton value="Add" process="@form"
 								update="@form, :jobTreeForm:jobTaskTree"

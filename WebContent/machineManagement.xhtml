@@ -63,22 +63,14 @@
 				appendTo="@(body)" styleClass="box-primary" responsive="true"
 				width="400">
 				<h:form id="MachineForm">
-					<p:growl showDetail="true" life="3000" severity="info">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="true" life="5000" severity="warn">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="false" life="8000" severity="error">
-						<p:autoUpdate />
-					</p:growl>
 					<p:panelGrid columns="2" cellpadding="5" layout="grid"
 						styleClass="no-border ui-fluid">
 						<p:outputLabel for="Name" value="Machine name" />
 						<p:inputText id="Name" binding="#{machineName}" required="true"
 							requiredMessage="You must provide a name!" />
 						<p:outputLabel for="Type" value="Machine Type" />
-						<p:selectOneMenu id="Type" binding="#{machineType}" dynamic="true">
+						<p:selectOneMenu id="Type" binding="#{machineType}" dynamic="true"
+							required="true">
 							<f:selectItem itemLabel="Select One" itemValue="" />
 							<f:selectItems
 								value="#{machineManagementController.possibleMachineTypes}" />
@@ -104,15 +96,6 @@
 				appendTo="@(body)" styleClass="box-primary" responsive="true"
 				width="400">
 				<h:form id="typeAddForm">
-					<p:growl showDetail="true" life="3000" severity="info">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="true" life="5000" severity="warn">
-						<p:autoUpdate />
-					</p:growl>
-					<p:growl showDetail="false" life="8000" severity="error">
-						<p:autoUpdate />
-					</p:growl>
 					<p:panelGrid columns="2" cellpadding="5" layout="grid"
 						styleClass="no-border ui-fluid">
 						<p:outputLabel for="Name" value="Type to add" />
@@ -131,7 +114,7 @@
 						styleClass="no-border ui-fluid">
 						<p:outputLabel for="Type" value="Type to delete" />
 						<p:selectOneMenu id="Type" binding="#{machineTypeToDelete}"
-							dynamic="true">
+							dynamic="true" required="true">
 							<f:selectItem itemLabel="Select One" itemValue="" />
 							<f:selectItems
 								value="#{machineManagementController.possibleMachineTypes}" />
