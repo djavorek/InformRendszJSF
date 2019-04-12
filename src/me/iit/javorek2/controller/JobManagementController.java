@@ -1,5 +1,6 @@
 package me.iit.javorek2.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,8 @@ public class JobManagementController {
 	private List<Job> availableJobs;
 	private List<String> jobNames;
 	private List<String> machineTypes;
-	private List<String> freeMachineNames;
+	private List<String> eligibleMachineNamesForAdd;
+	private List<String> eligibleMachineNamesForModify;
 	private TreeNode selectedJobTaskNode;
 	private Task taskToView;
 	private boolean taskToViewSelected;
@@ -87,12 +89,20 @@ public class JobManagementController {
 		this.selectedJobTaskNode = selectedJobTaskNode;
 	}
 
-	public List<String> getFreeMachineNames() {
-		return freeMachineNames;
+	public List<String> getEligibleMachineNamesForAdd() {
+		return eligibleMachineNamesForAdd;
 	}
 
-	public void setFreeMachineNames(List<String> freeMachineNames) {
-		this.freeMachineNames = freeMachineNames;
+	public void setEligibleMachineNamesForAdd(List<String> eligibleMachineNamesForAdd) {
+		this.eligibleMachineNamesForAdd = eligibleMachineNamesForAdd;
+	}
+
+	public List<String> getEligibleMachineNamesForModify() {
+		return eligibleMachineNamesForModify;
+	}
+
+	public void setEligibleMachineNamesForModify(List<String> eligibleMachineNamesForModify) {
+		this.eligibleMachineNamesForModify = eligibleMachineNamesForModify;
 	}
 
 	public Task getTaskToView() {
@@ -115,7 +125,6 @@ public class JobManagementController {
 	public void init() {
 		refreshAvailableJobs();
 		refreshAvailableMachineTypes();
-		refreshFreeMachineNames();
 
 		// Initializing a dummy task, for valid xhtml, will change it surely later on.
 		taskToView = new Task("", "", 0, new Machine());
@@ -197,7 +206,9 @@ public class JobManagementController {
 		Object dataObject = selectedJobTaskNode.getData();
 
 		if (dataObject.getClass() == Task.class) {
-			taskToView = ((Task) dataObject);
+			Task selectedTask = (Task)dataObject;
+			taskToView = selectedTask;
+			refreshEligibleMachinesForModify(taskToView.getRequiredMachineType());
 			taskToViewSelected = true;
 		} else if (selectedJobTaskNode.getData() instanceof Job) {
 			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_INFO,
@@ -221,6 +232,37 @@ public class JobManagementController {
 					"Task cannot be saved!", "Did you select a proper machine?"));
 			e.printStackTrace();
 		}
+	}
+	
+	public void refreshEligibleMachinesForAdd(String machineType) {
+		eligibleMachineNamesForAdd = refreshEligibleMachines(machineType);
+	}
+	
+	private void refreshEligibleMachinesForModify(String machineType) {
+		setEligibleMachineNamesForModify(refreshEligibleMachines(machineType));
+	}	
+	
+	private List<String> refreshEligibleMachines(String machineType) {
+		try {
+			if(!"".equals(machineType)) {
+				 return machineService.getFreeMachines()
+						.stream()
+						.filter(machine -> machine.getType().equals(machineType))
+						.map(machine -> machine.getName())
+						.collect(Collectors.toList());
+			} else {
+				return machineService.getFreeMachines()
+						.stream()
+						.map(machine -> machine.getName())
+						.collect(Collectors.toList());
+			}
+			
+		} catch (ServiceException e) {
+			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"Proper machines cannot be fetched for type!", "Maybe there are none"));
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
 	}
 
 	private void refreshAvailableJobs() {
@@ -254,17 +296,6 @@ public class JobManagementController {
 		} catch (ServiceException e) {
 			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_ERROR,
 					"Machine type list cannot be fetched!", "Try again later.."));
-		}
-	}
-
-	private void refreshFreeMachineNames() {
-		try {
-			setFreeMachineNames(
-					machineService.getFreeMachines().stream().map(job -> job.getName()).collect(Collectors.toList()));
-		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_ERROR,
-					"Free machine list cannot be fetched!", "Try again later.."));
-			e.printStackTrace();
 		}
 	}
 }

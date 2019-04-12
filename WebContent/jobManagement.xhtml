@@ -67,7 +67,7 @@
 										itemLabel="#{jobManagementController.taskToView.executor.name.concat(' (As it was)')}"
 										itemValue="#{jobManagementController.taskToView.executor.name}" />
 									<f:selectItems
-										value="#{jobManagementController.freeMachineNames}" />
+										value="#{jobManagementController.eligibleMachineNamesForModify}" />
 								</p:selectOneMenu>
 								<br />
 								<p:outputLabel for="duration" value="Task duration" />
@@ -128,13 +128,14 @@
 								dynamic="true" required="true">
 								<f:selectItem itemLabel="Select One" itemValue="" />
 								<f:selectItems value="#{jobManagementController.machineTypes}" />
+								<p:ajax update="executor"  listener="#{jobManagementController.refreshEligibleMachinesForAdd(machineType.value)}" />
 							</p:selectOneMenu>
 							<p:outputLabel for="executor" value="Executor" />
 							<p:selectOneMenu id="executor" binding="#{executor}"
 								dynamic="true">
 								<f:selectItem itemLabel="Choose Or Leave" itemValue="" />
 								<f:selectItems
-									value="#{jobManagementController.freeMachineNames}" />
+									value="#{jobManagementController.eligibleMachineNamesForAdd}" />
 							</p:selectOneMenu>
 							<p:outputLabel for="duration" value="Task duration" />
 							<p:inputNumber id="duration" binding="#{taskDuration}"

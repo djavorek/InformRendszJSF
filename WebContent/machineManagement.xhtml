@@ -15,11 +15,10 @@
 						value="#{machineManagementController.availableMachines}"
 						selection="#{machineManagementController.selectedMachines}"
 						selectionMode="multiple" rowKey="#{Machine.name}"
-						rowSelectMode="add" styleClass="box-solid box-primary"
+						rowSelectMode="add" styleClass="box-solid box-primary card"
 						paginator="true" paginatorPosition="top"
-						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-						rowsPerPageTemplate="5,10,15" rows="10"
-						emptyMessage="No machines found">
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						rows="10" emptyMessage="No machines found">
 
 						<p:ajax event="rowUnselect"
 							listener="#{machineManagementController.machineSelectionListener}"
