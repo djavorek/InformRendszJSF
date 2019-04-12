@@ -5,10 +5,19 @@ import java.util.List;
 import me.iit.javorek2.model.Worker;
 import me.iit.javorek2.model.exception.RepositoryException;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Interface WorkerRepository.
  */
 public interface WorkerRepository {
+	
+	/**
+	 * Gets the all workers.
+	 *
+	 * @return the all workers
+	 * @throws RepositoryException the repository exception
+	 */
+	List<Worker> getAllWorkers() throws RepositoryException;
 
 	/**
 	 * Gets the worker.

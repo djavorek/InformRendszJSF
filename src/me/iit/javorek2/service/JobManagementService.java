@@ -9,10 +9,11 @@ import me.iit.javorek2.model.exception.ServiceException;
 public interface JobManagementService {
 	
 	List<Job> getAllJobs() throws ServiceException;
-	void addJob(Job job) throws ServiceException;
-	void addTaskUnderJob(Task task, Job job) throws ServiceException;
-	void deleteTaskUnderJob(Task task, Job job) throws ServiceException;
-	void deleteJob(Job job) throws ServiceException;
-	void updateTask(Task task) throws ServiceException;
+	void fillJobWithItsTasks(Job job) throws ServiceException;
+	void addJob(Job jobToAdd) throws ServiceException;
+	void addTaskUnderJob(Task taskToAdd, Job parentJob) throws ServiceException;
+	void deleteTaskUnderJob(Task taskToDelete, Job parentJob) throws ServiceException;
+	void deleteJob(Job jobToDelete) throws ServiceException;
+	void updateTask(Task updatingTask) throws ServiceException;
 	
 }

@@ -57,6 +57,16 @@ public class JobManagementServiceImpl implements JobManagementService {
 		
 		return jobs;
 	}
+	
+	@Override
+	public void fillJobWithItsTasks(Job job) throws ServiceException {
+		// Not copying the original parameter Object is generally a bad practice! 
+		try {
+			job.setTasks(taskRepository.getTasksForJob(job));
+		} catch (RepositoryException e) {
+			throw new ServiceException(e);
+		}
+	}
 
 	@Override
 	public void addTaskUnderJob(Task task, Job job) throws ServiceException {

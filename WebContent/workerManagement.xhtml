@@ -5,12 +5,34 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui">
-	
+
 <h:body>
 	<ui:composition template="templates/template.xhtml">
 		<ui:define name="content">
-			<h:form id="jobForm">
-	            
+			<h:form id="tableForm">
+				<div class="ui-g-10 col-xs-offset-1">
+					<p:dataTable id="machineTable" var="Machine"
+						value="#{machineManagementController.availableMachines}"
+						selection="#{machineManagementController.selectedMachines}"
+						selectionMode="multiple" rowKey="#{Machine.name}"
+						rowSelectMode="add" styleClass="box-solid box-primary card"
+						paginator="true" paginatorPosition="top"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+						rows="10" emptyMessage="No workers found">
+
+
+						<p:column headerText="Name">
+							<h:outputText value="#{}" />
+						</p:column>
+
+
+						<f:facet name="footer">
+							<p:commandButton id="addButton" value="Add New"
+								action="#{machineManagementController.fetchPossibleMachineTypes}"
+								onsuccess="PF('addDialog').show();" icon="fa fa-fw fa-plus" />
+						</f:facet>
+					</p:dataTable>
+				</div>
 			</h:form>
 		</ui:define>
 	</ui:composition>

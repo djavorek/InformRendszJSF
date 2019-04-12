@@ -15,6 +15,7 @@ import javax.faces.bean.ManagedProperty;
 import me.iit.javorek2.dao.Dao;
 import me.iit.javorek2.model.Job;
 import me.iit.javorek2.model.Worker;
+import me.iit.javorek2.model.Worker.WorkerStatus;
 import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;
 import me.iit.javorek2.repository.WorkerRepository;
@@ -38,6 +39,41 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 	public void setDao(Dao dao) {
 		this.dao = dao;
 	}
+	
+
+	@Override
+	public List<Worker> getAllWorkers() throws RepositoryException {
+		List<Worker> workers = new ArrayList<>();
+
+		Connection connection = null;
+		Statement statement;
+		ResultSet resultSet;
+
+		try {
+			connection = dao.getConnection();
+		} catch (DaoException e) {
+			throw new RepositoryException("Error in underlying layer, database is not ready.", e);
+		}
+
+		try {
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT worker.name, worker.qualification, worker.hourlywage, job.name, worker.status FROM worker "
+					+ "LEFT JOIN job ON worker.current_job=job.id");
+
+			while (resultSet.next()) {
+				Worker workerToAdd = new Worker(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3));
+				Job workersJob = new Job(resultSet.getString(4));
+				workerToAdd.setCurrentJob(workersJob);
+				workerToAdd.setStatus(WorkerStatus.valueOf(resultSet.getString(5)));
+				
+				workers.add(workerToAdd);
+			}
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
+
+		return workers;
+	}
 
 	/* (non-Javadoc)
 	 * @see me.iit.javorek2.repository.WorkerRepository#getWorker(me.iit.javorek2.model.Worker)
@@ -57,7 +93,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 
 		try {
 			preparedStatement = connection.prepareStatement("SELECT worker.name, worker.qualification, worker.hourlywage, job.name, worker.status "
-					+ "FROM worker INNER JOIN job ON worker.current_job=job.id WHERE worker.name=?");
+					+ "FROM worker LEFT JOIN job ON worker.current_job=job.id WHERE worker.name=?");
 			preparedStatement.setString(1, worker.getName());
 			resultSet = preparedStatement.executeQuery();
 					
@@ -93,7 +129,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 
 		try {
 			preparedStatement = connection.prepareStatement(" worker.name, worker.qualification, worker.hourlywage, job.name, worker.status FROM "
-					+ "worker INNER JOIN job ON worker.current_job=job.id WHERE worker.name LIKE '%?%'");
+					+ "worker LEFT JOIN job ON worker.current_job=job.id WHERE worker.name LIKE '%?%'");
 			resultSet = preparedStatement.executeQuery();
 					
 
