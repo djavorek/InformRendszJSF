@@ -12,11 +12,11 @@ public class Worker {
 	public enum WorkerStatus {
 		
 		/** The onleave. */
-		ONLEAVE("onleave"), 
+		onleave("On-leave"), 
 		/** The working. */
-		WORKING("working"), 
+		working("Working"), 
 		/** The free. */
-		FREE("free");
+		free("Free");
 		
 		/** The code. */
 		private final String code;
@@ -87,7 +87,7 @@ public class Worker {
 	 * @param hourlyWage the hourly wage
 	 */
 	public Worker(String name, String qualification, int hourlyWage) {
-		this(name, qualification, hourlyWage, null, WorkerStatus.FREE);
+		this(name, qualification, hourlyWage, null, WorkerStatus.free);
 	}
 
 	/**

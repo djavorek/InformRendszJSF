@@ -11,28 +11,50 @@
 		<ui:define name="content">
 			<h:form id="tableForm">
 				<div class="ui-g-10 col-xs-offset-1">
-					<p:dataTable id="machineTable" var="Machine"
-						value="#{machineManagementController.availableMachines}"
-						selection="#{machineManagementController.selectedMachines}"
-						selectionMode="multiple" rowKey="#{Machine.name}"
-						rowSelectMode="add" styleClass="box-solid box-primary card"
-						paginator="true" paginatorPosition="top"
-						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-						rows="10" emptyMessage="No workers found">
 
+					<p:dataGrid var="worker"
+						value="#{workerManagementController.workers}" columns="3"
+						layout="grid" rows="12" paginator="true" id="cars"
+						styleClass="box-solid box-primary card"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
 
-						<p:column headerText="Name">
-							<h:outputText value="#{}" />
-						</p:column>
+						<f:facet name="header">
+				            Workers
+				        </f:facet>
 
+						<p:panel header="#{worker.name}" style="text-align:center" styleClass="box-solid box-teal card">
+							<h:panelGrid columns="1" style="width:100%">
+								<h:outputText value="#{worker.status.code}" />
 
-						<f:facet name="footer">
-							<p:commandButton id="addButton" value="Add New"
-								action="#{machineManagementController.fetchPossibleMachineTypes}"
-								onsuccess="PF('addDialog').show();" icon="fa fa-fw fa-plus" />
-						</f:facet>
-					</p:dataTable>
+								<p:commandLink update=":tableForm:workerDial"
+									oncomplete="PF('workerDialog').show();" title="View Detail">
+									<h:outputText styleClass="fa fa-search" style="margin:0 auto;" />
+									<f:setPropertyActionListener value="#{worker}"
+										target="#{workerManagementController.selectedWorker}" />
+								</p:commandLink>
+							</h:panelGrid>
+						</p:panel>
+					</p:dataGrid>
 				</div>
+
+				<p:dialog id="workerDial" header="Worker Details"
+					widgetVar="workerDialog" modal="true" resizable="false"
+					appendTo="@(body)" styleClass="box-primary" responsive="true"
+					width="400">
+						<p:panelGrid columns="2" cellpadding="5" layout="grid"
+							styleClass="no-border ui-fluid" rendered="#{not empty workerManagementController.selectedWorker}">
+								<p:outputLabel for="name" value="Worker name" />
+								<h:outputText id="name"
+									value="#{workerManagementController.selectedWorker.name}" />
+								<p:outputLabel for="qualification" value="Qualification" />
+								<h:outputText id="qualification"
+									value="#{workerManagementController.selectedWorker.qualification}" />
+								<p:commandButton value="Modify" process="@form" update="@form"
+									action="#{workerManagementController.modifyWorker()}"
+									icon="fa fa-arrow-circle-up" styleClass="btn-primary" />
+
+							</p:panelGrid>
+				</p:dialog>
 			</h:form>
 		</ui:define>
 	</ui:composition>
