@@ -14,7 +14,7 @@
 
 					<p:dataGrid var="worker"
 						value="#{workerManagementController.workers}" columns="3"
-						layout="grid" rows="12" paginator="true" id="cars"
+						layout="grid" rows="12" paginator="true" id="workers"
 						styleClass="box-solid box-primary card"
 						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
 
@@ -22,11 +22,12 @@
 				            Workers
 				        </f:facet>
 
-						<p:panel header="#{worker.name}" style="text-align:center" styleClass="box-solid box-teal card">
+						<p:panel header="#{worker.name}" style="text-align:center"
+							styleClass="box-solid box-teal card">
 							<h:panelGrid columns="1" style="width:100%">
 								<h:outputText value="#{worker.status.code}" />
 
-								<p:commandLink update=":tableForm:workerDial"
+								<p:commandLink update=":workerDial"
 									oncomplete="PF('workerDialog').show();" title="View Detail">
 									<h:outputText styleClass="fa fa-search" style="margin:0 auto;" />
 									<f:setPropertyActionListener value="#{worker}"
@@ -36,26 +37,64 @@
 						</p:panel>
 					</p:dataGrid>
 				</div>
-
-				<p:dialog id="workerDial" header="Worker Details"
-					widgetVar="workerDialog" modal="true" resizable="false"
-					appendTo="@(body)" styleClass="box-primary" responsive="true"
-					width="400">
-						<p:panelGrid columns="2" cellpadding="5" layout="grid"
-							styleClass="no-border ui-fluid" rendered="#{not empty workerManagementController.selectedWorker}">
-								<p:outputLabel for="name" value="Worker name" />
-								<h:outputText id="name"
-									value="#{workerManagementController.selectedWorker.name}" />
-								<p:outputLabel for="qualification" value="Qualification" />
-								<h:outputText id="qualification"
-									value="#{workerManagementController.selectedWorker.qualification}" />
-								<p:commandButton value="Modify" process="@form" update="@form"
-									action="#{workerManagementController.modifyWorker()}"
-									icon="fa fa-arrow-circle-up" styleClass="btn-primary" />
-
-							</p:panelGrid>
-				</p:dialog>
 			</h:form>
+
+			<p:dialog id="workerDial" header="Worker Details"
+				widgetVar="workerDialog" modal="true" resizable="false"
+				appendTo="@(body)" styleClass="box-primary" responsive="true"
+				width="400">
+				<h:form id="modifyForm">
+					<p:panelGrid columns="2" cellpadding="5" layout="grid"
+						styleClass="no-border ui-fluid"
+						rendered="#{not empty workerManagementController.selectedWorker}">
+						<p:outputLabel for="name" value="Worker name" />
+						<h:outputText id="name"
+							value="#{workerManagementController.selectedWorker.name}" />
+						<p:outputLabel for="qualification" value="Qualification" />
+						<h:outputText id="qualification"
+							value="#{workerManagementController.selectedWorker.qualification}" />
+						<p:outputLabel for="wage_inplace" value="Hourly Wage" />
+						<p:inplace id="wage_inplace">
+							<p:inputNumber id="wage"
+								value="#{workerManagementController.selectedWorker.hourlyWage}"
+								required="true" requiredMessage="You must provide the duration!"
+								minValue="0" maxValue="10000" decimalPlaces="0">
+							</p:inputNumber>
+						</p:inplace>
+						<p:outputLabel for="status" value="Status" />
+						<p:selectOneMenu id="status"
+							value="#{workerManagementController.selectedWorker.status}"
+							dynamic="true" required="true">
+							<p:ajax event="change" update="@form" />
+							<f:selectItems
+								value="#{workerManagementController.workerStatuses}"
+								var="status" itemValue="#{status}" itemLabel="#{status.code}" />
+						</p:selectOneMenu>
+						<p:outputLabel for="job" value="Current job" />
+						<p:selectOneMenu id="job"
+							value="#{workerManagementController.selectedWorker.currentJob.name}"
+							dynamic="true" required="true"
+							disabled="#{workerManagementController.selectedWorker.status == 'free'}">
+							<f:selectItem
+								itemLabel="#{workerManagementController.selectedWorker.currentJob.name.concat(' (As it was)')}"
+								itemValue="#{workerManagementController.selectedWorker.currentJob.name}" />
+							<f:selectItems
+								value="#{workerManagementController.eligibleJobNames}" />
+						</p:selectOneMenu>
+						<p:commandButton value="Modify" process="@form"
+							update="@form, :tableForm"
+							action="#{workerManagementController.modifyWorker()}"
+							icon="fa fa-arrow-circle-up" styleClass="btn-primary"
+							onsuccess="PF('workerDialog').hide();" />
+						<p:commandButton value="Dismiss" process="@form"
+							update="@form, :tableForm"
+							action="#{workerManagementController.deleteSelectedWorker()}"
+							icon="fa fa-minus-circle" styleClass="btn-primary"
+							onsuccess="PF('workerDialog').hide();" />
+					</p:panelGrid>
+				</h:form>
+			</p:dialog>
+
 		</ui:define>
 	</ui:composition>
 </h:body>

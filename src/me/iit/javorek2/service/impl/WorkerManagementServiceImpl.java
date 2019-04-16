@@ -85,9 +85,11 @@ public class WorkerManagementServiceImpl implements WorkerManagementService {
 			if(oldWorker.getHourlyWage() != updatingWorker.getHourlyWage()) {
 				workerRepository.updateWorkerWage(updatingWorker);
 			}
-			if(!oldWorker.getCurrentJob().getName().equals(updatingWorker.getCurrentJob().getName())) {
+			if(oldWorker.getCurrentJob() != null && updatingWorker.getCurrentJob() != null && !oldWorker.getCurrentJob().getName().equals(updatingWorker.getCurrentJob().getName())) {
 				workerRepository.updateWorkerJob(updatingWorker);
 			}
+			
+			//TODO: Status update in all layer
 		} catch (RepositoryException e) {
 			throw new ServiceException("Updating worker was unsuccessful", e);
 		}

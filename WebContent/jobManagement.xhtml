@@ -72,12 +72,12 @@
 								<br />
 								<p:outputLabel for="duration" value="Task duration" />
 								<br />
-								<p:inplace id="basic">
+								<p:inplace id="durationInplace">
 									<p:inputNumber id="duration"
 										value="#{jobManagementController.taskToView.duration}"
 										required="true"
 										requiredMessage="You must provide the duration!" minValue="0"
-										maxValue="10000">
+										maxValue="10000" decimalPlaces="0">
 									</p:inputNumber>
 								</p:inplace>
 								<br />
