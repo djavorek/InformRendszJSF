@@ -20,6 +20,7 @@ import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;
 import me.iit.javorek2.repository.WorkerRepository;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class WorkerRepositoryImpl.
  */
@@ -41,6 +42,9 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 	}
 	
 
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.WorkerRepository#getAllWorkers()
+	 */
 	@Override
 	public List<Worker> getAllWorkers() throws RepositoryException {
 		List<Worker> workers = new ArrayList<>();
@@ -165,7 +169,7 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 			preparedStatement.setString(2, worker.getQualification());
 			preparedStatement.setInt(3, worker.getHourlyWage());
 			preparedStatement.setString(4, worker.getCurrentJob().getName());
-			preparedStatement.setString(5, worker.getStatus().getCode());
+			preparedStatement.setString(5, worker.getStatus().name());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			throw new RepositoryException(e);
@@ -237,6 +241,31 @@ public class WorkerRepositoryImpl implements WorkerRepository {
 		
 			preparedStatement = connection.prepareStatement("UPDATE worker SET hourlywage=? WHERE name=?");
 			preparedStatement.setInt(1, worker.getHourlyWage());
+			preparedStatement.setString(2, worker.getName());
+			preparedStatement.executeUpdate();
+		} catch (SQLException e) {
+			throw new RepositoryException(e);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.WorkerRepository#updateWorkerStatus(me.iit.javorek2.model.Worker)
+	 */
+	@Override
+	public void updateWorkerStatus(Worker worker) throws RepositoryException {
+		Connection connection = null;
+		PreparedStatement preparedStatement;
+
+		try {
+			connection = dao.getConnection();
+		} catch (DaoException e) {
+			throw new RepositoryException("Error in underlying layer, database is not ready.", e);
+		}
+
+		try {
+		
+			preparedStatement = connection.prepareStatement("UPDATE worker SET status=? WHERE name=?");
+			preparedStatement.setString(1, worker.getStatus().name());
 			preparedStatement.setString(2, worker.getName());
 			preparedStatement.executeUpdate();
 		} catch (SQLException e) {

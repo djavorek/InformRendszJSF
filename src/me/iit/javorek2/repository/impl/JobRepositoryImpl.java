@@ -14,7 +14,6 @@ import javax.faces.bean.ManagedProperty;
 
 import me.iit.javorek2.dao.Dao;
 import me.iit.javorek2.model.Job;
-import me.iit.javorek2.model.Machine;
 import me.iit.javorek2.model.Task;
 import me.iit.javorek2.model.exception.DaoException;
 import me.iit.javorek2.model.exception.RepositoryException;

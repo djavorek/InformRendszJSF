@@ -35,6 +35,12 @@
 								</p:commandLink>
 							</h:panelGrid>
 						</p:panel>
+
+						<f:facet name="footer">
+							<p:commandButton id="addButton" value="Add New"
+								action="#{workerManagementController.fetchEligibleJobNames()}"
+								onsuccess="PF('addDialog').show();" icon="fa fa-fw fa-plus" />
+						</f:facet>
 					</p:dataGrid>
 				</div>
 			</h:form>
@@ -73,7 +79,7 @@
 						<p:outputLabel for="job" value="Current job" />
 						<p:selectOneMenu id="job"
 							value="#{workerManagementController.selectedWorker.currentJob.name}"
-							dynamic="true" required="true"
+							dynamic="true"
 							disabled="#{workerManagementController.selectedWorker.status == 'free'}">
 							<f:selectItem
 								itemLabel="#{workerManagementController.selectedWorker.currentJob.name.concat(' (As it was)')}"
@@ -85,12 +91,53 @@
 							update="@form, :tableForm"
 							action="#{workerManagementController.modifyWorker()}"
 							icon="fa fa-arrow-circle-up" styleClass="btn-primary"
-							onsuccess="PF('workerDialog').hide();" />
+							onsuccess="PF('workerDialog').hide()" />
 						<p:commandButton value="Dismiss" process="@form"
 							update="@form, :tableForm"
 							action="#{workerManagementController.deleteSelectedWorker()}"
 							icon="fa fa-minus-circle" styleClass="btn-primary"
-							onsuccess="PF('workerDialog').hide();" />
+							onsuccess="PF('workerDialog').hide()" />
+					</p:panelGrid>
+				</h:form>
+			</p:dialog>
+
+			<p:dialog id="addDial" header="Add new Worker" widgetVar="addDialog"
+				modal="true" resizable="false" appendTo="@(body)"
+				styleClass="box-primary" responsive="true" width="400">
+				<h:form id="addForm">
+					<p:panelGrid columns="2" cellpadding="5" layout="grid"
+						styleClass="no-border ui-fluid">
+						<p:outputLabel for="name" value="Worker name" />
+						<h:inputText id="name" binding="#{name}" required="true" />
+						<p:outputLabel for="qualification" value="Qualification" />
+						<h:inputText id="qualification" binding="#{qualification}"
+							required="true" />
+						<p:outputLabel for="wage" value="Hourly Wage" />
+						<p:inputNumber id="wage" binding="#{wage}" required="true"
+							minValue="0" maxValue="10000" decimalPlaces="0">
+						</p:inputNumber>
+						<p:outputLabel for="status" value="Status" />
+						<p:selectOneMenu id="status"
+							binding="#{selectedStatus}"
+							dynamic="true" required="true">
+							<f:selectItem itemLabel="Select One" itemValue="" />
+							<f:selectItems
+								value="#{workerManagementController.workerStatuses}"
+								var="status" itemValue="#{status.name()}" itemLabel="#{status.code}" />
+						</p:selectOneMenu>
+						<p:outputLabel for="job" value="Current job" />
+						<p:selectOneMenu id="job"
+							binding="#{job}"
+							dynamic="true"
+							disabled="#{workerManagementController.selectedWorker.status == 'free'}">
+							<f:selectItems
+								value="#{workerManagementController.eligibleJobNames}" />
+						</p:selectOneMenu>
+						<p:commandButton value="Add" process="@form"
+							update="@form, :tableForm"
+							action="#{workerManagementController.addWorker(name.value, qualification.value, wage.value, selectedStatus.value, job.value)}"
+							icon="fa fa-arrow-circle-up" styleClass="btn-primary"
+							onsuccess="PF('addDialog').hide()" />
 					</p:panelGrid>
 				</h:form>
 			</p:dialog>

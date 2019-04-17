@@ -77,6 +77,9 @@ public class TaskRepositoryImpl implements TaskRepository {
 		return taskList;
 	}
 	
+	/* (non-Javadoc)
+	 * @see me.iit.javorek2.repository.TaskRepository#getTaskByName(java.lang.String)
+	 */
 	@Override
 	public Task getTaskByName(String taskName) throws RepositoryException {
 		Connection connection = null;

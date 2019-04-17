@@ -68,4 +68,12 @@ public interface WorkerRepository {
 	 * @throws RepositoryException the repository exception
 	 */
 	void updateWorkerWage(Worker worker) throws RepositoryException;
+
+	/**
+	 * Update worker status.
+	 *
+	 * @param worker the worker
+	 * @throws RepositoryException the repository exception
+	 */
+	void updateWorkerStatus(Worker worker) throws RepositoryException;
 }

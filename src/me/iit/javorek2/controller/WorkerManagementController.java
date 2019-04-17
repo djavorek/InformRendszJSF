@@ -71,9 +71,14 @@ public class WorkerManagementController {
 	}
 	
 	public void modifyWorker() {
-		if(selectedWorker.getStatus().equals(WorkerStatus.free)) {
+		if (selectedWorker.getStatus().equals(WorkerStatus.free)) {
 			selectedWorker.setCurrentJob(new Job(""));
 		}
+		else if (selectedWorker.getCurrentJob() == null || "".equals(selectedWorker.getCurrentJob().getName())) {
+			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"Worker cannot be saved!", "For this status, you need to set a job"));
+		}
+			
 		try {
 			workerService.updateWorker(selectedWorker);
 		} catch (ServiceException e) {
@@ -81,6 +86,27 @@ public class WorkerManagementController {
 			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
 					"Worker cannot be saved!", "Is everything valid?"));
 		}
+		fetchWorkers();
+	}
+	
+	public void addWorker(String name, String qualification, int wage, WorkerStatus status, String jobName) {
+		Worker workerToAdd = new Worker();
+		workerToAdd.setName(name);
+		workerToAdd.setQualification(qualification);
+		workerToAdd.setHourlyWage(wage);
+		workerToAdd.setStatus(status);
+		workerToAdd.setCurrentJob(new Job(jobName));
+		
+		try {
+			workerService.addWorker(workerToAdd);
+			FacesContext.getCurrentInstance().addMessage("messages",
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Worker added successfully!", ""));
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"Worker cannot be added!", "Maybe it exists already.."));
+		}
+		fetchWorkers();
 	}
 	
 	public WorkerStatus[] getWorkerStatuses() {
@@ -90,10 +116,26 @@ public class WorkerManagementController {
 	public void deleteSelectedWorker() {
 		try {
 			workerService.deleteWorker(selectedWorker);
+			FacesContext.getCurrentInstance().addMessage("messages",
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Worker deleted successfully!", ""));
 		} catch (ServiceException e) {
 			e.printStackTrace();
 			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
 					"Worker cannot be deleted!", "Maybe it does not exist already.."));
+		}
+		fetchWorkers();
+	}
+	
+	public void fetchEligibleJobNames() {
+		try {
+			eligibleJobNames = jobService.getAllJobs()
+					.stream()
+					.map(job -> job.getName())
+					.collect(Collectors.toList());
+		} catch (ServiceException e) {
+			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
+					"Eligible job names cannot be fetched!", "Maybe there are none.."));
+			e.printStackTrace();
 		}
 	}
 	
@@ -104,19 +146,6 @@ public class WorkerManagementController {
 			e.printStackTrace();
 			FacesContext.getCurrentInstance().addMessage("messages",
 					new FacesMessage(FacesMessage.SEVERITY_WARN, "Workers cannot be fetched!", "Try again later.."));
-		}
-	}
-	
-	private void fetchEligibleJobNames() {
-		try {
-			eligibleJobNames = jobService.getAllJobs()
-					.stream()
-					.map(job -> job.getName())
-					.collect(Collectors.toList());
-		} catch (ServiceException e) {
-			FacesContext.getCurrentInstance().addMessage("messages", new FacesMessage(FacesMessage.SEVERITY_WARN,
-					"Eligible job names cannot be fetched!", "Maybe there are none.."));
-			e.printStackTrace();
 		}
 	}
 }
